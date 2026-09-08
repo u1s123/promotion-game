@@ -301,6 +301,142 @@
   }
   .cell.hit { animation:cHit 0.3s ease-out; }
   @keyframes cHit { 0%{transform:scale(1)} 50%{transform:scale(0.85); filter:brightness(1.4)} 100%{transform:scale(1)} }
+
+  /* ============ 移动端优化 ============ */
+  @media (max-width: 480px) {
+    body { padding: 10px 8px 30px; }
+    .wrap { max-width: 100%; }
+
+    /* 标题 */
+    .header { margin-bottom: 10px; }
+    .title { font-size: 24px; letter-spacing: 2px; gap: 6px; }
+    .subtitle { font-size: 10px; }
+    .tagline { font-size: 11px; margin-top: 4px; }
+
+    /* 卡片 */
+    .card { border-radius: 14px; }
+    .player-card { padding: 10px 12px; margin-bottom: 8px; }
+    .colleague-card { padding: 8px 12px; margin-bottom: 8px; gap: 8px; }
+
+    /* 玩家信息 */
+    .player-top { gap: 10px; margin-bottom: 10px; }
+    .avatar { width: 40px; height: 40px; border-radius: 12px; }
+    .avatar svg { width: 22px; height: 22px; }
+    .player-name { font-size: 14px; }
+    .level-tag { font-size: 9px; padding: 2px 6px; }
+    .player-desc { font-size: 10px; }
+    .company-say { font-size: 10px; margin-top: 3px; padding-left: 6px; }
+
+    /* 数值行 */
+    .stats-row { gap: 5px; margin-bottom: 8px; }
+    .stat-item { padding: 7px 4px; border-radius: 10px; }
+    .stat-item .sv { font-size: 15px; }
+    .stat-item .sl { font-size: 9px; margin-top: 2px; }
+
+    /* 倒计时 */
+    .timers { gap: 6px; margin-bottom: 8px; }
+    .timer { padding: 5px 8px; border-radius: 8px; }
+    .timer .tl { font-size: 9px; }
+    .timer .tv { font-size: 12px; }
+
+    /* 体力 */
+    .energy-header { margin-bottom: 4px; }
+    .energy-label { font-size: 10px; }
+    .energy-val { font-size: 11px; }
+    .energy-track { height: 8px; }
+    .state-row { margin-top: 6px; flex-wrap: wrap; gap: 4px; }
+    .state-tag { font-size: 9px; padding: 2px 8px; }
+    .records { font-size: 9px; }
+
+    /* 同事卡 */
+    .col-avatar { width: 32px; height: 32px; border-radius: 9px; }
+    .col-avatar svg { width: 18px; height: 18px; }
+    .col-name { font-size: 12px; }
+    .col-trait { font-size: 8px; padding: 1px 5px; }
+    .col-detail { font-size: 9px; }
+    .col-promo { font-size: 13px; }
+    .col-promo-label { font-size: 8px; }
+
+    /* 棋盘 */
+    .board-wrap { padding: 8px; margin-bottom: 8px; }
+    .board { gap: 3px; }
+    .cell { border-radius: 8px; }
+    .cell .ci { width: 20px; height: 20px; }
+    .cell .cl { font-size: 7px; margin-top: 1px; }
+    .cell.perm::after { font-size: 6px; top: 1px; right: 2px; }
+
+    /* 玩家和同事在棋盘上 */
+    .player, .col-on-board { width: calc(16.666% - 3px); height: calc(16.666% - 3px); }
+
+    /* 日志 */
+    .log-card { padding: 8px 12px; margin-bottom: 8px; max-height: 70px; }
+    .log { font-size: 10px; line-height: 1.6; }
+
+    /* 提示 */
+    .controls-hint { font-size: 9px; margin-bottom: 8px; }
+
+    /* 按钮 */
+    .btn-row { gap: 6px; margin-bottom: 8px; }
+    .btn { padding: 12px 8px; font-size: 12px; border-radius: 10px; min-height: 44px; }
+    .btn svg { width: 13px; height: 13px; }
+
+    /* 弹窗 */
+    .modal { padding: 22px 18px; max-width: 300px; border-radius: 18px; }
+    .modal-icon { width: 60px; height: 60px; margin-bottom: 12px; }
+    .modal-icon svg { width: 32px; height: 32px; }
+    .modal-title { font-size: 18px; margin-bottom: 6px; }
+    .modal-desc { font-size: 11px; margin-bottom: 18px; line-height: 1.6; }
+
+    /* 浮动效果 */
+    .fx { font-size: 11px; }
+  }
+
+  /* 超小屏幕 */
+  @media (max-width: 380px) {
+    .title { font-size: 20px; letter-spacing: 1px; }
+    .stat-item .sv { font-size: 13px; }
+    .stat-item .sl { font-size: 8px; }
+    .cell .ci { width: 17px; height: 17px; }
+    .cell .cl { font-size: 6px; }
+    .player-name { font-size: 13px; }
+    .btn { font-size: 11px; padding: 10px 6px; min-height: 42px; }
+  }
+
+  /* 横屏优化 */
+  @media (max-height: 500px) and (orientation: landscape) {
+    body { padding: 8px; }
+    .header { margin-bottom: 6px; }
+    .title { font-size: 20px; }
+    .subtitle, .tagline { display: none; }
+    .player-card { padding: 8px 10px; margin-bottom: 6px; }
+    .player-top { margin-bottom: 6px; }
+    .stats-row { margin-bottom: 6px; }
+    .timers { margin-bottom: 6px; }
+    .colleague-card { display: none; }
+    .board-wrap { margin-bottom: 6px; }
+    .log-card { display: none; }
+    .controls-hint { display: none; }
+    .btn-row { margin-bottom: 6px; }
+  }
+
+  /* 触摸优化 */
+  @media (hover: none) and (pointer: coarse) {
+    .cell { -webkit-tap-highlight-color: transparent; }
+    .cell:active { transform: scale(0.95); }
+    .btn:active { transform: scale(0.97); }
+    /* 防止双击缩放 */
+    * { touch-action: manipulation; }
+    .board-wrap { touch-action: none; }
+  }
+
+  /* iPhone 安全区域 */
+  @supports (padding: max(0px)) {
+    body {
+      padding-left: max(12px, env(safe-area-inset-left));
+      padding-right: max(12px, env(safe-area-inset-right));
+      padding-bottom: max(30px, env(safe-area-inset-bottom));
+    }
+  }
 </style>
 </head>
 <body>
@@ -1158,24 +1294,46 @@ document.addEventListener('keydown', e => {
   if (m[e.key]) { e.preventDefault(); move(...m[e.key]); }
 });
 
-let tsx=0, tsy=0;
+let tsx=0, tsy=0, touchMoved=false;
 const bc = document.getElementById('boardContainer');
-bc.addEventListener('touchstart', e=>{tsx=e.touches[0].clientX;tsy=e.touches[0].clientY;},{passive:true});
+bc.addEventListener('touchstart', e=>{
+  tsx=e.touches[0].clientX;
+  tsy=e.touches[0].clientY;
+  touchMoved=false;
+  bc.style.transform='scale(0.98)';
+  bc.style.transition='transform 0.1s';
+},{passive:true});
+
+bc.addEventListener('touchmove', e=>{
+  // 防止页面滚动
+  e.preventDefault();
+  const dx=e.touches[0].clientX-tsx, dy=e.touches[0].clientY-tsy;
+  if (Math.abs(dx)>10 || Math.abs(dy)>10) touchMoved=true;
+},{passive:false});
+
 bc.addEventListener('touchend', e=>{
+  bc.style.transform='scale(1)';
   if (G.over) return;
   const dx=e.changedTouches[0].clientX-tsx, dy=e.changedTouches[0].clientY-tsy;
-  if (Math.abs(dx)<20&&Math.abs(dy)<20) return;
+  // 手机上最小滑动距离设为15px，更灵敏
+  if (Math.abs(dx)<15&&Math.abs(dy)<15) return;
   if (Math.abs(dx)>Math.abs(dy)) move(dx>0?1:-1,0);
   else move(0,dy>0?1:-1);
 },{passive:true});
 
+// 触摸取消时恢复
+bc.addEventListener('touchcancel', ()=>{
+  bc.style.transform='scale(1)';
+},{passive:true});
+
 let msx=0,msy=0,drag=false;
-bc.addEventListener('mousedown', e=>{drag=true;msx=e.clientX;msy=e.clientY;});
+bc.addEventListener('mousedown', e=>{drag=true;msx=e.clientX;msy=e.clientY; bc.style.transform='scale(0.98)'; bc.style.transition='transform 0.1s';});
 document.addEventListener('mouseup', e=>{
+  bc.style.transform='scale(1)';
   if (!drag||G.over) return;
   drag=false;
   const dx=e.clientX-msx, dy=e.clientY-msy;
-  if (Math.abs(dx)<20&&Math.abs(dy)<20) return;
+  if (Math.abs(dx)<15&&Math.abs(dy)<15) return;
   if (Math.abs(dx)>Math.abs(dy)) move(dx>0?1:-1,0);
   else move(0,dy>0?1:-1);
 });
