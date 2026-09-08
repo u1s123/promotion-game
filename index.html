@@ -203,6 +203,23 @@
   }
   @keyframes bossFloat { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-3px)} }
 
+  /* 总经理（陈总）特殊样式 */
+  .gm-card { background: linear-gradient(135deg, #c5d4e0, var(--card-bg)); border-color: var(--blue); }
+  .gm-avatar { border-color: var(--blue); box-shadow: 2px 2px 0 rgba(51,71,84,0.3); }
+  .gm-trait { background: var(--blue); color: var(--card-bg); }
+  .gm-title { font-size:9px; padding:1px 6px; border-radius:2px; background: var(--blue); color: var(--card-bg); font-weight:700; }
+  .gm-promo { color: var(--blue); }
+  .gm-on-board { z-index: 9; }
+  .gm-on-board-inner {
+    background: var(--card-bg);
+    border: 3px solid var(--blue);
+    box-shadow: 2px 2px 0 rgba(51,71,84,0.4), 0 0 12px rgba(51,71,84,0.2);
+    animation: gmFloat 2s ease-in-out infinite;
+  }
+  @keyframes gmFloat { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-3px)} }
+  .gm-card.hidden, .gm-on-board.hidden { display: none !important; }
+  .boss-card.hidden, .boss-on-board.hidden { display: none !important; }
+
   /* 棋盘 */
   .board-wrap { padding:12px; margin-bottom:10px; touch-action:none; position:relative; background: var(--bg-paper-dark); }
   .board {
@@ -241,6 +258,7 @@
   .cell.fire { background: var(--accent-light); border-color: var(--accent); }
   .cell.hr { background: var(--cyan-light); }
   .cell.skip { background: var(--purple-light); }
+  .cell.coffee { background: var(--orange-light); border-color: #8b5a2b; }
   .cell.promotion {
     background: var(--gold-light);
     animation:promoP 1.5s ease-in-out infinite;
@@ -511,7 +529,9 @@
 <defs>
   <symbol id="i-player" viewBox="0 0 24 24" fill="none" stroke="#ac462c" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></symbol>
   <symbol id="i-col" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></symbol>
-  <symbol id="i-boss" viewBox="0 0 24 24" fill="none" stroke="#c9a227" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/><path d="M12 3v1"/><path d="M8 5l.5-.5"/><path d="M16 5l-.5-.5"/></symbol></symbol>
+  <symbol id="i-boss" viewBox="0 0 24 24" fill="none" stroke="#c9a227" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/><path d="M12 3v1"/><path d="M8 5l.5-.5"/><path d="M16 5l-.5-.5"/></symbol>
+  <symbol id="i-coffee" viewBox="0 0 24 24" fill="none" stroke="#6b4423" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 8h1a4 4 0 1 1 0 8h-1"/><path d="M3 8h14v9a4 4 0 0 1-4 4H7a4 4 0 0 1-4-4Z"/><line x1="6" y1="2" x2="6" y2="4"/><line x1="10" y1="2" x2="10" y2="4"/><line x1="14" y1="2" x2="14" y2="4"/></symbol>
+  <symbol id="i-gm" viewBox="0 0 24 24" fill="none" stroke="#4a6b8a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="M12 2v2"/></symbol></symbol></symbol>
   <symbol id="i-work" viewBox="0 0 24 24" fill="none" stroke="#334754" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></symbol>
   <symbol id="i-project" viewBox="0 0 24 24" fill="none" stroke="#c87a3a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></symbol>
   <symbol id="i-report" viewBox="0 0 24 24" fill="none" stroke="#6b5b7a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></symbol>
@@ -619,6 +639,19 @@
     </div>
   </div>
 
+  <!-- 上级卡 - 总经理（初始隐藏，玩家升经理后登场） -->
+  <div class="colleague-card card gm-card hidden" id="gmCard">
+    <div class="col-avatar gm-avatar"><svg><use href="#i-gm"/></svg></div>
+    <div class="col-info">
+      <div class="col-name">陈道明 <span class="col-trait gm-trait">爱吃咖啡</span> <span class="gm-title">陈总</span></div>
+      <div class="col-detail" id="gmDetail">总监 · 高层管理 · 每回合行动</div>
+    </div>
+    <div>
+      <div class="col-promo gm-promo" id="gmPromo">450</div>
+      <div class="col-promo-label">升职气</div>
+    </div>
+  </div>
+
   <!-- 棋盘 -->
   <div class="board-wrap card" id="boardContainer">
     <div class="board" id="board">
@@ -631,6 +664,9 @@
       </div>
       <div class="col-on-board boss-on-board" id="bossOnBoard">
         <div class="col-on-board-inner boss-on-board-inner"><svg><use href="#i-boss"/></svg></div>
+      </div>
+      <div class="col-on-board gm-on-board hidden" id="gmOnBoard">
+        <div class="col-on-board-inner gm-on-board-inner"><svg><use href="#i-gm"/></svg></div>
       </div>
     </div>
   </div>
@@ -732,7 +768,8 @@ const BOARD = 6;
 const ATTEND_MAX = 6;   // 考勤回合（难度调高：8→6）
 const PERF_MAX = 18;    // 绩效回合（难度调高：24→18）
 const COL_MOVE_INTERVAL = 2; // 罗欣每N回合动一次
-const BOSS_MOVE_INTERVAL = 1; // 王总每回合都动（更积极）
+const BOSS_MOVE_INTERVAL = 1; // 上级每回合都动（更积极）
+const BOSS_UPGRADE_LEVEL = 2; // 玩家升到多少级时换上级（经理级）
 
 const LEVELS = [
   { name:'员工', need:0, desc:'刚来的', eval:'新鲜血液' },
@@ -754,11 +791,12 @@ const CELLS = {
   fire:{label:'救火',class:'fire',icon:'#i-fire',perm:false},
   hr:{label:'HR',class:'hr',icon:'#i-hr',perm:true},
   skip:{label:'翘班',class:'skip',icon:'#i-skip',perm:false},
+  coffee:{label:'咖啡',class:'coffee',icon:'#i-coffee',perm:false},
   promotion:{label:'晋升',class:'promotion',icon:'#i-promo',perm:false}
 };
 
-// 难度调高：干活/项目权重降低，摸鱼/救火权重提高
-const WEIGHTS = { work:16, project:8, report:8, network:8, slack:15, fire:8, skip:5, empty:18 };
+// 难度调高：干活/项目权重降低，摸鱼/救火权重提高，新增咖啡
+const WEIGHTS = { work:15, project:7, report:7, network:7, slack:14, fire:7, skip:5, coffee:8, empty:18 };
 // clock和hr是常驻，单独放置
 
 // ============ 状态 ============
@@ -771,16 +809,20 @@ let G = {
   slackCount:0, skipCount:0, promoSuccess:0, promoFail:0,
   skipPenalty:false, // 翘班惩罚：下一次晋升作废
   moving:false, over:false, promoAvail:false,
+  bossType:'wang', // 当前上级类型：wang=王总, gm=总经理
   // 同事罗欣
   col:{ x:4, y:1, promo:30, level:0, moveCounter:0, name:'罗欣', trait:'会来事' },
   // 上级王总（经理级，爱抢功）
-  boss:{ x:1, y:4, promo:200, level:2, moveCounter:0, name:'王建国', trait:'爱抢功', title:'王总' }
+  boss:{ x:1, y:4, promo:200, level:2, moveCounter:0, name:'王建国', trait:'爱抢功', title:'王总' },
+  // 总经理（总监级，爱吃咖啡，玩家升经理后登场）
+  gm:{ x:1, y:4, promo:450, level:3, moveCounter:0, name:'陈道明', trait:'爱吃咖啡', title:'陈总' }
 };
 
 const boardEl = document.getElementById('board');
 const playerEl = document.getElementById('player');
 const colEl = document.getElementById('colOnBoard');
 const bossEl = document.getElementById('bossOnBoard');
+const gmEl = document.getElementById('gmOnBoard');
 const logEl = document.getElementById('logArea');
 
 // ============ 初始化 ============
@@ -838,6 +880,8 @@ function updatePositions() {
   colEl.style.top = `calc(${G.col.y*s}% + 2px)`;
   bossEl.style.left = `calc(${G.boss.x*s}% + 2px)`;
   bossEl.style.top = `calc(${G.boss.y*s}% + 2px)`;
+  gmEl.style.left = `calc(${G.gm.x*s}% + 2px)`;
+  gmEl.style.top = `calc(${G.gm.y*s}% + 2px)`;
 }
 
 function showCellInfo(x,y) {
@@ -920,10 +964,16 @@ function updateUI() {
   const movesLeft = COL_MOVE_INTERVAL - (G.col.moveCounter % COL_MOVE_INTERVAL);
   document.getElementById('colDetail').textContent = `${colLvl.name} · ${colLvl.desc} · 再${movesLeft}回合行动`;
 
-  // 王总
-  document.getElementById('bossPromo').textContent = G.boss.promo;
-  const bossLvl = LEVELS[G.boss.level];
-  document.getElementById('bossDetail').textContent = `${bossLvl.name} · ${bossLvl.desc} · 每回合行动`;
+  // 上级信息（根据当前上级类型显示）
+  if (G.bossType === 'wang') {
+    document.getElementById('bossPromo').textContent = G.boss.promo;
+    const bossLvl = LEVELS[G.boss.level];
+    document.getElementById('bossDetail').textContent = `${bossLvl.name} · ${bossLvl.desc} · 每回合行动`;
+  } else {
+    document.getElementById('gmPromo').textContent = G.gm.promo;
+    const gmLvl = LEVELS[G.gm.level];
+    document.getElementById('gmDetail').textContent = `${gmLvl.name} · ${gmLvl.desc} · 每回合行动`;
+  }
 }
 
 function addLog(msg, type='') {
@@ -957,13 +1007,16 @@ function move(dx,dy) {
   if (G.moving || G.over) return;
   G.moving = true;
 
+  // 获取当前上级对象
+  const superior = G.bossType === 'gm' ? G.gm : G.boss;
+
   let nx=G.px, ny=G.py, hit=null, hx=-1, hy=-1;
   while (true) {
     const tx=nx+dx, ty=ny+dy;
     if (tx<0||tx>=BOARD||ty<0||ty>=BOARD) break;
-    // 不能穿过同事和王总
+    // 不能穿过同事和上级
     if (tx===G.col.x && ty===G.col.y) break;
-    if (tx===G.boss.x && ty===G.boss.y) break;
+    if (tx===superior.x && ty===superior.y) break;
     nx=tx; ny=ty;
     if (G.board[ny][nx] !== 'empty') { hit=G.board[ny][nx]; hx=nx; hy=ny; break; }
   }
@@ -980,13 +1033,23 @@ function move(dx,dy) {
     G.energy = Math.max(0, G.energy-1);
     G.attend--; G.perf--;
 
-    // 王总相邻检查：被派活额外耗体力
-    const bossAdj = Math.abs(G.px-G.boss.x) + Math.abs(G.py-G.boss.y) === 1;
-    if (bossAdj && Math.random() < 0.4) {
-      const extra = Math.floor(Math.random()*8) + 3;
-      G.energy = Math.max(0, G.energy - extra);
-      addLog(`👔 王总路过：“这个需求今晚改一下”，体力-${extra}`,'lg-warn');
-      fx(G.px,G.py,`-${extra}体力`,'#ac462c');
+    // 上级相邻检查
+    const supAdj = Math.abs(G.px-superior.x) + Math.abs(G.py-superior.y) === 1;
+    if (supAdj) {
+      if (G.bossType === 'wang') {
+        // 王总：被派活额外耗体力
+        if (Math.random() < 0.4) {
+          const extra = Math.floor(Math.random()*8) + 3;
+          G.energy = Math.max(0, G.energy - extra);
+          addLog(`👔 王总路过：“这个需求今晚改一下”，体力-${extra}`,'lg-warn');
+          fx(G.px,G.py,`-${extra}体力`,'#ac462c');
+        }
+      } else {
+        // 总经理：提醒你该买咖啡了
+        if (Math.random() < 0.3) {
+          addLog(`☕ 陈总看了你一眼：“咖啡没了...”（撞咖啡格子给领导买咖啡可+升职气）`,'lg-info');
+        }
+      }
     }
 
     // 考勤检查
@@ -1004,9 +1067,12 @@ function move(dx,dy) {
     G.col.moveCounter++;
     if (G.col.moveCounter % COL_MOVE_INTERVAL === 0) colleagueMove();
 
-    // 王总行动（每回合）
-    G.boss.moveCounter++;
-    if (G.boss.moveCounter % BOSS_MOVE_INTERVAL === 0) bossMove();
+    // 上级行动（每回合）
+    superior.moveCounter++;
+    if (superior.moveCounter % BOSS_MOVE_INTERVAL === 0) {
+      if (G.bossType === 'wang') bossMove();
+      else gmMove();
+    }
 
     checkPromoAvail();
     updateUI();
@@ -1090,6 +1156,28 @@ function collide(type,x,y) {
       addLog('🏖️ 翘班了！体力+40，但下一次晋升机会作废！','lg-warn');
       break;
     }
+    case 'coffee': {
+      G.energy = Math.min(100,G.energy+15);
+      fx(x,y,'+15体力','#8b5a2b');
+      addLog('☕ 喝了杯咖啡，体力+15，精神多了！','lg-good');
+      // 如果总经理在相邻格子，给领导买咖啡+升职气
+      if (G.bossType === 'gm') {
+        const gmAdj = Math.abs(G.px-G.gm.x) + Math.abs(G.py-G.gm.y) === 1;
+        if (gmAdj) {
+          G.promo += 20;
+          fx(x,y,'+20升职气','#4a6b8a');
+          addLog('☕ 顺便给陈总带了一杯！陈总：“小伙子有前途”，+20升职气！','lg-gold');
+        }
+      } else {
+        // 王总在旁边也想喝，但你只买了自己的
+        const bossAdj = Math.abs(G.px-G.boss.x) + Math.abs(G.py-G.boss.y) === 1;
+        if (bossAdj && Math.random() < 0.5) {
+          G.energy = Math.max(0, G.energy - 5);
+          addLog('👔 王总看着你手里的咖啡：“就买自己的？” 心情复杂，体力-5','lg-warn');
+        }
+      }
+      break;
+    }
     case 'promotion': { tryPromotion(); return; }
   }
   // 非常驻格子消耗
@@ -1117,8 +1205,9 @@ function hrEvent(x,y) {
 
 function refill() {
   const empty = [];
+  const sup = G.bossType === 'gm' ? G.gm : G.boss;
   for (let y=0;y<BOARD;y++) for (let x=0;x<BOARD;x++)
-    if (G.board[y][x]==='empty' && !(x===G.px&&y===G.py) && !(x===G.col.x&&y===G.col.y) && !(x===G.boss.x&&y===G.boss.y))
+    if (G.board[y][x]==='empty' && !(x===G.px&&y===G.py) && !(x===G.col.x&&y===G.col.y) && !(x===sup.x&&y===sup.y))
       empty.push({x,y});
   if (!empty.length) return;
   const c = empty[Math.floor(Math.random()*empty.length)];
@@ -1168,9 +1257,14 @@ function doPerformance() {
   const colBonus = Math.floor(Math.random()*25) - 5;
   G.col.promo = Math.max(0, G.col.promo + colBonus);
 
-  // 王总也绩效（领导的绩效总是更好）
-  const bossBonus = Math.floor(Math.random()*30) + 5;
-  G.boss.promo = Math.max(0, G.boss.promo + bossBonus);
+  // 上级也绩效（领导的绩效总是更好）
+  if (G.bossType === 'wang') {
+    const bossBonus = Math.floor(Math.random()*30) + 5;
+    G.boss.promo = Math.max(0, G.boss.promo + bossBonus);
+  } else {
+    const gmBonus = Math.floor(Math.random()*35) + 10;
+    G.gm.promo = Math.max(0, G.gm.promo + gmBonus);
+  }
 }
 
 // ============ 同事AI ============
@@ -1328,6 +1422,104 @@ function bossCollide(type,x,y) {
     }
     case 'hr': addLog(`👔 王总和HR密谈了半小时...`,'lg-gold'); break;
     case 'skip': addLog(`👔 王总提前下班了（领导的事能叫翘班吗）`,'lg-gold'); break;
+    case 'coffee': G.boss.promo += 5; addLog(`👔 王总喝了杯咖啡，+5升职气（提神醒脑）`,'lg-gold'); break;
+  }
+  if (!CELLS[type].perm && type!=='promotion') G.board[y][x]='empty';
+}
+
+// ============ 总经理AI ============
+function gmMove() {
+  // 总经理更高级：优先找咖啡格子（爱吃咖啡），其次是汇报/项目
+  const dirs = [[0,-1],[0,1],[-1,0],[1,0]];
+  let bestDir = null, bestScore = -1;
+  for (const [dx,dy] of dirs) {
+    let nx=G.gm.x, ny=G.gm.y, score=0;
+    while (true) {
+      const tx=nx+dx, ty=ny+dy;
+      if (tx<0||tx>=BOARD||ty<0||ty>=BOARD) break;
+      if (tx===G.px&&ty===G.py) break;
+      if (tx===G.col.x&&ty===G.col.y) break;
+      nx=tx; ny=ty;
+      const t = G.board[ny][nx];
+      if (t!=='empty') {
+        if (t==='coffee') score+=30; // 最爱咖啡！
+        else if (t==='work') score+=6;
+        else if (t==='project') score+=18;
+        else if (t==='report') score+=22;
+        else if (t==='network') score+=10;
+        else if (t==='clock') score+=5;
+        else if (t==='slack') score+=3;
+        else if (t==='fire') score+=12;
+        else if (t==='skip') score+=1;
+        break;
+      }
+    }
+    score += Math.random()*3;
+    if (score > bestScore) { bestScore=score; bestDir=[dx,dy]; }
+  }
+
+  if (!bestDir) return;
+  const [dx,dy] = bestDir;
+  let nx=G.gm.x, ny=G.gm.y, hit=null, hx=-1, hy=-1;
+  while (true) {
+    const tx=nx+dx, ty=ny+dy;
+    if (tx<0||tx>=BOARD||ty<0||ty>=BOARD) break;
+    if (tx===G.px&&ty===G.py) break;
+    if (tx===G.col.x&&ty===G.col.y) break;
+    nx=tx; ny=ty;
+    if (G.board[ny][nx]!=='empty') { hit=G.board[ny][nx]; hx=nx; hy=ny; break; }
+  }
+
+  if (nx===G.gm.x&&ny===G.gm.y) return;
+  G.gm.x=nx; G.gm.y=ny;
+  updatePositions();
+
+  if (hit) {
+    setTimeout(()=>{
+      gmCollide(hit,hx,hy);
+      renderBoard();
+    }, 200);
+  }
+}
+
+function gmCollide(type,x,y) {
+  // 总经理收益更高，喝咖啡额外加成
+  switch(type) {
+    case 'work': {
+      const g = Math.round(4 * 1.4);
+      G.gm.promo += g;
+      addLog(`☕ 陈总顺手把活安排了，+${g}升职气（高层视野）`,'lg-info');
+      break;
+    }
+    case 'project': {
+      const g = Math.round(12 * 1.4);
+      G.gm.promo += g;
+      addLog(`☕ 陈总接了个大项目，+${g}升职气（战略眼光）`,'lg-info');
+      break;
+    }
+    case 'report': {
+      const g = Math.round(10 * 1.4);
+      G.gm.promo += g;
+      addLog(`☕ 陈总向董事会汇报了，+${g}升职气（高屋建瓴）`,'lg-info');
+      break;
+    }
+    case 'network': G.gm.promo += 15; addLog(`☕ 陈总去参加行业峰会了，+15升职气`,'lg-info'); break;
+    case 'clock': addLog(`☕ 陈总来公司露了个脸`,'lg-info'); break;
+    case 'slack': addLog(`☕ 陈总在办公室看财报...`,'lg-info'); break;
+    case 'fire': {
+      const g = Math.round(18 * 1.4);
+      G.gm.promo += g;
+      addLog(`☕ 陈总亲自下场救火，+${g}升职气（力挽狂澜）`,'lg-info');
+      break;
+    }
+    case 'hr': addLog(`☕ 陈总和HR谈了谈组织架构调整...`,'lg-info'); break;
+    case 'skip': addLog(`☕ 陈总提前走了（高管的事能叫翘班吗）`,'lg-info'); break;
+    case 'coffee': {
+      G.gm.promo += 15;
+      G.gm.energy = 100; // 总经理喝咖啡回满体力（设定）
+      addLog(`☕ 陈总喝到了咖啡！+15升职气，精神百倍！（这就是他要的味道）`,'lg-gold');
+      break;
+    }
   }
   if (!CELLS[type].perm && type!=='promotion') G.board[y][x]='empty';
 }
@@ -1337,9 +1529,10 @@ function checkPromoAvail() {
   if (G.level >= LEVELS.length-1) return;
   const next = LEVELS[G.level+1];
   if (G.promo >= next.need && !G.promoAvail) {
+    const sup = G.bossType === 'gm' ? G.gm : G.boss;
     const empty = [];
     for (let y=0;y<BOARD;y++) for (let x=0;x<BOARD;x++)
-      if (G.board[y][x]==='empty' && !(x===G.px&&y===G.py) && !(x===G.col.x&&y===G.col.y) && !(x===G.boss.x&&y===G.boss.y))
+      if (G.board[y][x]==='empty' && !(x===G.px&&y===G.py) && !(x===G.col.x&&y===G.col.y) && !(x===sup.x&&y===sup.y))
         empty.push({x,y});
     if (empty.length) {
       const c = empty[Math.floor(Math.random()*empty.length)];
@@ -1395,6 +1588,32 @@ function tryPromotion() {
     G.promoAvail = false;
     G.energy = Math.min(100, G.energy+30);
 
+    // 上级切换：玩家升到经理级后，王总退场，总经理登场
+    if (G.level >= BOSS_UPGRADE_LEVEL && G.bossType === 'wang') {
+      G.bossType = 'gm';
+      // 总经理出现在王总附近的空位
+      const emptyNear = [];
+      for (let dy=-2; dy<=2; dy++) for (let dx=-2; dx<=2; dx++) {
+        const tx = G.boss.x + dx, ty = G.boss.y + dy;
+        if (tx>=0 && tx<BOARD && ty>=0 && ty<BOARD && G.board[ty][tx]==='empty'
+            && !(tx===G.px&&ty===G.py) && !(tx===G.col.x&&ty===G.col.y)) {
+          emptyNear.push({x:tx, y:ty});
+        }
+      }
+      if (emptyNear.length) {
+        const pos = emptyNear[Math.floor(Math.random()*emptyNear.length)];
+        G.gm.x = pos.x; G.gm.y = pos.y;
+      } else {
+        G.gm.x = G.boss.x; G.gm.y = G.boss.y;
+      }
+      // 隐藏王总，显示总经理
+      document.getElementById('bossCard').classList.add('hidden');
+      document.getElementById('bossOnBoard').classList.add('hidden');
+      document.getElementById('gmCard').classList.remove('hidden');
+      document.getElementById('gmOnBoard').classList.remove('hidden');
+      addLog(`☕ 人事变动：王建国调往分公司，新任上级陈道明（陈总）到任！陈总爱吃咖啡，记得多买咖啡拍马屁。`,'lg-gold');
+    }
+
     for (let y=0;y<BOARD;y++) for (let x=0;x<BOARD;x++)
       if (G.board[y][x]==='promotion') G.board[y][x]='empty';
 
@@ -1449,7 +1668,7 @@ function gameOver(reason) {
     icon.setAttribute('href','#i-trophy');
     iconWrap.className = 'modal-icon mi-gold';
     title.textContent = '恭喜通关！';
-    desc.textContent = `你成功晋升为CEO！\n\n最终成绩：\n升职气 ${G.promo}\n总回合 ${G.turn}\n摸鱼 ${G.slackCount} 次\n晋升成功 ${G.promoSuccess} 次\n\n同事罗欣最终：${LEVELS[G.col.level].name}，升职气 ${G.col.promo}\n上级王总最终：${LEVELS[G.boss.level].name}，升职气 ${G.boss.promo}\n\n你是真正的职场王者！`;
+    desc.textContent = `你成功晋升为CEO！\n\n最终成绩：\n升职气 ${G.promo}\n总回合 ${G.turn}\n摸鱼 ${G.slackCount} 次\n晋升成功 ${G.promoSuccess} 次\n\n同事罗欣最终：${LEVELS[G.col.level].name}，升职气 ${G.col.promo}\n上级最终：${G.bossType==='wang'?'王建国（王总）':'陈道明（陈总）'}，${LEVELS[G.bossType==='wang'?G.boss.level:G.gm.level].name}，升职气 ${G.bossType==='wang'?G.boss.promo:G.gm.promo}\n\n你是真正的职场王者！`;
   } else if (reason === 'dead') {
     icon.setAttribute('href','#i-skull');
     iconWrap.className = 'modal-icon mi-error';
