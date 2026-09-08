@@ -1,0 +1,1189 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>升职气 ↗ 打工人职场鉴定</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  :root {
+    --bg-1: #1a1a2e; --bg-2: #16213e; --bg-3: #0f3460;
+    --card-bg: rgba(255,255,255,0.06);
+    --card-border: rgba(255,255,255,0.1);
+    --text-primary: #e8e8e8; --text-secondary: #8892a4;
+    --accent: #e94560; --accent2: #ff6b6b;
+    --gold: #ffd700; --green: #4ade80; --blue: #60a5fa;
+    --orange: #fb923c; --purple: #a78bfa; --cyan: #22d3ee;
+  }
+  body {
+    font-family: -apple-system, "PingFang SC", "Microsoft YaHei", sans-serif;
+    background: linear-gradient(160deg, var(--bg-1) 0%, var(--bg-2) 50%, var(--bg-3) 100%);
+    background-attachment: fixed;
+    color: var(--text-primary);
+    min-height: 100vh;
+    display: flex; flex-direction: column; align-items: center;
+    padding: 16px 12px 40px; overflow-x: hidden; position: relative;
+  }
+  body::before {
+    content:''; position:fixed; width:400px; height:400px;
+    background: radial-gradient(circle, rgba(233,69,96,0.15), transparent 70%);
+    top:-150px; right:-100px; border-radius:50%; pointer-events:none;
+  }
+  body::after {
+    content:''; position:fixed; width:350px; height:350px;
+    background: radial-gradient(circle, rgba(96,165,250,0.12), transparent 70%);
+    bottom:-100px; left:-100px; border-radius:50%; pointer-events:none;
+  }
+  .wrap { width:100%; max-width:440px; position:relative; z-index:1; }
+
+  /* 标题 */
+  .header { text-align:center; margin-bottom:14px; }
+  .title {
+    font-size:30px; font-weight:900; letter-spacing:3px;
+    background: linear-gradient(135deg, #fff 0%, #e94560 100%);
+    -webkit-background-clip:text; -webkit-text-fill-color:transparent;
+    background-clip:text; display:flex; align-items:center; justify-content:center; gap:8px;
+  }
+  .title .arrow { animation:bounceA 1.5s ease-in-out infinite; -webkit-text-fill-color:#e94560; }
+  @keyframes bounceA { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-5px)} }
+  .subtitle { font-size:11px; color:var(--text-secondary); margin-top:4px; letter-spacing:1px; }
+  .tagline { font-size:12px; color:rgba(233,69,96,0.7); margin-top:6px; font-style:italic; }
+
+  /* 玻璃卡片 */
+  .card {
+    background:var(--card-bg); backdrop-filter:blur(20px);
+    border:1px solid var(--card-border); border-radius:18px;
+    box-shadow:0 8px 32px rgba(0,0,0,0.3);
+  }
+
+  /* 玩家信息卡 */
+  .player-card { padding:14px 16px; margin-bottom:10px; }
+  .player-top { display:flex; align-items:center; gap:12px; margin-bottom:12px; }
+  .avatar {
+    width:48px; height:48px; border-radius:14px;
+    background:linear-gradient(135deg, #e94560, #ff6b6b);
+    display:flex; align-items:center; justify-content:center;
+    box-shadow:0 4px 15px rgba(233,69,96,0.4); flex-shrink:0;
+  }
+  .avatar svg { width:28px; height:28px; }
+  .player-info { flex:1; min-width:0; }
+  .player-name-row { display:flex; align-items:center; gap:8px; }
+  .player-name { font-size:16px; font-weight:700; }
+  .level-tag {
+    font-size:10px; padding:2px 8px; border-radius:10px;
+    background:rgba(233,69,96,0.2); color:#ff6b6b; font-weight:600;
+  }
+  .player-desc { font-size:11px; color:var(--text-secondary); margin-top:2px; }
+  .company-say {
+    font-size:11px; color:rgba(255,215,0,0.6); margin-top:4px;
+    font-style:italic; border-left:2px solid rgba(255,215,0,0.3); padding-left:8px;
+  }
+
+  /* 数值行 */
+  .stats-row { display:grid; grid-template-columns:repeat(4,1fr); gap:6px; margin-bottom:10px; }
+  .stat {
+    background:rgba(255,255,255,0.04); border-radius:10px; padding:8px 4px;
+    text-align:center; border:1px solid rgba(255,255,255,0.06);
+  }
+  .stat .sv { font-size:16px; font-weight:800; line-height:1.1; }
+  .stat .sl { font-size:9px; color:var(--text-secondary); margin-top:3px; }
+  .stat.promo .sv { color:var(--blue); }
+  .stat.work .sv { color:var(--orange); }
+  .stat.perf .sv { color:var(--purple); }
+  .stat.turn .sv { color:var(--cyan); }
+
+  /* 回合倒计时 */
+  .timers { display:flex; gap:8px; margin-bottom:10px; }
+  .timer {
+    flex:1; background:rgba(255,255,255,0.04); border-radius:10px;
+    padding:6px 10px; display:flex; align-items:center; justify-content:space-between;
+    border:1px solid rgba(255,255,255,0.06);
+  }
+  .timer .tl { font-size:10px; color:var(--text-secondary); }
+  .timer .tv { font-size:13px; font-weight:700; }
+  .timer.attend .tv { color:var(--green); }
+  .timer.attend.warn .tv { color:var(--orange); }
+  .timer.attend.danger .tv { color:var(--accent2); }
+  .timer.perf .tv { color:var(--purple); }
+
+  /* 体力条 */
+  .energy-section { margin-bottom:4px; }
+  .energy-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:5px; }
+  .energy-label { font-size:11px; color:var(--text-secondary); display:flex; align-items:center; gap:4px; }
+  .energy-label svg { width:12px; height:12px; }
+  .energy-val { font-size:12px; font-weight:700; }
+  .energy-track { height:8px; background:rgba(0,0,0,0.3); border-radius:4px; overflow:hidden; }
+  .energy-fill {
+    height:100%; border-radius:4px; transition:width 0.4s, background 0.4s;
+    position:relative; overflow:hidden;
+  }
+  .energy-fill::after {
+    content:''; position:absolute; top:0; left:0; right:0; height:50%;
+    background:linear-gradient(to bottom, rgba(255,255,255,0.25), transparent);
+  }
+  .e-high { background:linear-gradient(90deg, #4ade80, #22c55e); }
+  .e-mid { background:linear-gradient(90deg, #fbbf24, #f59e0b); }
+  .e-low { background:linear-gradient(90deg, #f87171, #ef4444); }
+  .state-row { display:flex; align-items:center; justify-content:space-between; margin-top:8px; }
+  .state-tag {
+    display:inline-flex; align-items:center; gap:4px; font-size:10px; font-weight:600;
+    padding:3px 10px; border-radius:10px;
+  }
+  .state-tag svg { width:11px; height:11px; }
+  .st-good { background:rgba(74,222,128,0.15); color:#4ade80; }
+  .st-mid { background:rgba(251,191,36,0.15); color:#fbbf24; }
+  .st-bad { background:rgba(248,113,113,0.15); color:#f87171; }
+  .records { font-size:10px; color:var(--text-secondary); }
+  .records span { margin-left:8px; }
+
+  /* 同事卡 */
+  .colleague-card { padding:10px 14px; margin-bottom:10px; display:flex; align-items:center; gap:10px; }
+  .col-avatar {
+    width:36px; height:36px; border-radius:10px;
+    background:linear-gradient(135deg, #a78bfa, #8b5cf6);
+    display:flex; align-items:center; justify-content:center; flex-shrink:0;
+    box-shadow:0 2px 10px rgba(167,139,250,0.3);
+  }
+  .col-avatar svg { width:20px; height:20px; }
+  .col-info { flex:1; min-width:0; }
+  .col-name { font-size:13px; font-weight:600; display:flex; align-items:center; gap:6px; }
+  .col-trait { font-size:9px; padding:1px 6px; border-radius:8px; background:rgba(167,139,250,0.2); color:#c4b5fd; }
+  .col-detail { font-size:10px; color:var(--text-secondary); margin-top:2px; }
+  .col-promo { font-size:14px; font-weight:800; color:var(--purple); text-align:right; }
+  .col-promo-label { font-size:9px; color:var(--text-secondary); }
+
+  /* 棋盘 */
+  .board-wrap { padding:10px; margin-bottom:10px; touch-action:none; position:relative; }
+  .board {
+    display:grid; grid-template-columns:repeat(6,1fr); gap:4px;
+    aspect-ratio:1; position:relative;
+  }
+  .cell {
+    border-radius:10px; display:flex; flex-direction:column;
+    align-items:center; justify-content:center; position:relative;
+    transition:transform 0.15s; user-select:none; overflow:hidden;
+    border:1px solid rgba(255,255,255,0.08);
+  }
+  .cell::before {
+    content:''; position:absolute; top:0; left:0; right:0; height:50%;
+    background:linear-gradient(to bottom, rgba(255,255,255,0.08), transparent);
+    pointer-events:none;
+  }
+  .cell .ci { width:24px; height:24px; display:flex; align-items:center; justify-content:center; }
+  .cell .ci svg { width:100%; height:100%; }
+  .cell .cl { font-size:8px; margin-top:1px; opacity:0.7; font-weight:600; }
+  .cell.perm { border:1px solid rgba(255,215,0,0.4); box-shadow:0 0 8px rgba(255,215,0,0.15); }
+  .cell.perm::after {
+    content:'常驻'; position:absolute; top:2px; right:3px; font-size:7px;
+    color:rgba(255,215,0,0.6); font-weight:700;
+  }
+  .cell.work { background:linear-gradient(135deg, rgba(96,165,250,0.2), rgba(59,130,246,0.15)); }
+  .cell.project { background:linear-gradient(135deg, rgba(251,146,60,0.2), rgba(249,115,22,0.15)); }
+  .cell.report { background:linear-gradient(135deg, rgba(167,139,250,0.2), rgba(139,92,246,0.15)); }
+  .cell.network { background:linear-gradient(135deg, rgba(74,222,128,0.2), rgba(34,197,94,0.15)); }
+  .cell.clock { background:linear-gradient(135deg, rgba(244,114,182,0.2), rgba(236,72,153,0.15)); }
+  .cell.slack { background:linear-gradient(135deg, rgba(148,163,184,0.2), rgba(100,116,139,0.15)); }
+  .cell.fire { background:linear-gradient(135deg, rgba(248,113,113,0.25), rgba(239,68,68,0.2)); }
+  .cell.hr { background:linear-gradient(135deg, rgba(34,211,238,0.2), rgba(6,182,212,0.15)); }
+  .cell.skip { background:linear-gradient(135deg, rgba(52,211,153,0.2), rgba(16,185,129,0.15)); }
+  .cell.promotion {
+    background:linear-gradient(135deg, rgba(255,215,0,0.3), rgba(251,191,36,0.2));
+    animation:promoP 1.5s ease-in-out infinite;
+    box-shadow:0 0 15px rgba(255,215,0,0.3);
+  }
+  .cell.empty { background:rgba(255,255,255,0.02); border:1px dashed rgba(255,255,255,0.05); }
+  @keyframes promoP { 0%,100%{transform:scale(1)} 50%{transform:scale(1.06)} }
+
+  /* 玩家 */
+  .player {
+    position:absolute; width:calc(16.666% - 4px); height:calc(16.666% - 4px);
+    display:flex; align-items:center; justify-content:center; z-index:10;
+    transition:left 0.25s cubic-bezier(0.34,1.56,0.64,1), top 0.25s cubic-bezier(0.34,1.56,0.64,1);
+    pointer-events:none;
+  }
+  .player-inner {
+    width:78%; height:78%; border-radius:50%;
+    background:linear-gradient(135deg, #fff, #e0e0e0);
+    display:flex; align-items:center; justify-content:center;
+    box-shadow:0 4px 15px rgba(0,0,0,0.4), 0 0 0 2px rgba(255,255,255,0.3), 0 0 15px rgba(233,69,96,0.4);
+    animation:pFloat 2s ease-in-out infinite;
+  }
+  @keyframes pFloat { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-2px)} }
+  .player-inner svg { width:60%; height:60%; }
+  .player-ring {
+    position:absolute; inset:-3px; border-radius:50%;
+    border:2px solid rgba(233,69,96,0.3); animation:rPulse 2s ease-in-out infinite;
+  }
+  @keyframes rPulse { 0%,100%{transform:scale(1); opacity:0.5} 50%{transform:scale(1.15); opacity:0} }
+
+  /* 同事在棋盘上 */
+  .col-on-board {
+    position:absolute; width:calc(16.666% - 4px); height:calc(16.666% - 4px);
+    display:flex; align-items:center; justify-content:center; z-index:9;
+    transition:left 0.3s, top 0.3s; pointer-events:none;
+  }
+  .col-on-board-inner {
+    width:70%; height:70%; border-radius:50%;
+    background:linear-gradient(135deg, #a78bfa, #7c3aed);
+    display:flex; align-items:center; justify-content:center;
+    box-shadow:0 2px 10px rgba(124,58,237,0.4);
+  }
+  .col-on-board-inner svg { width:55%; height:55%; }
+
+  /* 日志 */
+  .log-card { padding:10px 14px; margin-bottom:10px; max-height:85px; overflow-y:auto; }
+  .log-card::-webkit-scrollbar { width:3px; }
+  .log-card::-webkit-scrollbar-thumb { background:rgba(255,255,255,0.15); border-radius:2px; }
+  .log { font-size:11px; line-height:1.7; }
+  .log p { margin-bottom:1px; }
+  .lg-good { color:#4ade80; }
+  .lg-bad { color:#f87171; }
+  .lg-info { color:#60a5fa; }
+  .lg-warn { color:#fbbf24; }
+  .lg-gold { color:#ffd700; }
+  .lg-col { color:#c4b5fd; }
+
+  /* 提示 */
+  .hint { text-align:center; font-size:10px; color:var(--text-secondary); margin-bottom:10px; }
+  .btn-row { display:flex; gap:8px; margin-bottom:10px; }
+  .btn {
+    flex:1; padding:11px; border:none; border-radius:12px; font-size:12px;
+    font-weight:700; cursor:pointer; transition:transform 0.15s, opacity 0.2s;
+    display:flex; align-items:center; justify-content:center; gap:5px;
+  }
+  .btn:active { transform:scale(0.96); }
+  .btn svg { width:14px; height:14px; }
+  .btn-p { background:linear-gradient(135deg, #e94560, #ff6b6b); color:#fff; box-shadow:0 4px 15px rgba(233,69,96,0.3); }
+  .btn-s { background:rgba(255,255,255,0.08); color:var(--text-primary); border:1px solid rgba(255,255,255,0.1); }
+
+  /* 弹窗 */
+  .modal-overlay {
+    position:fixed; top:0; left:0; right:0; bottom:0;
+    background:rgba(0,0,0,0.7); backdrop-filter:blur(8px);
+    display:flex; align-items:center; justify-content:center; z-index:100;
+    opacity:0; pointer-events:none; transition:opacity 0.3s;
+  }
+  .modal-overlay.show { opacity:1; pointer-events:auto; }
+  .modal {
+    background:linear-gradient(160deg, #1e1e3a, #16213e);
+    border:1px solid rgba(255,255,255,0.1); border-radius:22px;
+    padding:28px 22px; max-width:340px; width:90%; text-align:center;
+    transform:scale(0.85) translateY(20px); transition:transform 0.4s cubic-bezier(0.34,1.56,0.64,1);
+    box-shadow:0 20px 60px rgba(0,0,0,0.5);
+  }
+  .modal-overlay.show .modal { transform:scale(1) translateY(0); }
+  .modal-icon {
+    width:68px; height:68px; margin:0 auto 14px; border-radius:50%;
+    display:flex; align-items:center; justify-content:center;
+    animation:mPop 0.5s cubic-bezier(0.34,1.56,0.64,1);
+  }
+  @keyframes mPop { 0%{transform:scale(0) rotate(-180deg)} 100%{transform:scale(1) rotate(0)} }
+  .modal-icon svg { width:36px; height:36px; }
+  .mi-success { background:linear-gradient(135deg, rgba(74,222,128,0.2), rgba(34,197,94,0.15)); }
+  .mi-error { background:linear-gradient(135deg, rgba(248,113,113,0.2), rgba(239,68,68,0.15)); }
+  .mi-info { background:linear-gradient(135deg, rgba(96,165,250,0.2), rgba(59,130,246,0.15)); }
+  .mi-gold { background:linear-gradient(135deg, rgba(255,215,0,0.2), rgba(251,191,36,0.15)); }
+  .modal-title { font-size:20px; font-weight:800; margin-bottom:8px; }
+  .modal-desc { font-size:12px; color:var(--text-secondary); line-height:1.7; margin-bottom:20px; white-space:pre-line; }
+  .modal .btn { width:100%; }
+  .modal .btn + .btn { margin-top:8px; }
+
+  /* 浮动效果 */
+  .fx {
+    position:absolute; font-size:12px; font-weight:800; z-index:20;
+    pointer-events:none; animation:fUp 1.2s cubic-bezier(0.4,0,0.2,1) forwards;
+    text-shadow:0 1px 3px rgba(0,0,0,0.5); white-space:nowrap;
+  }
+  @keyframes fUp {
+    0%{opacity:0; transform:translateY(5px) scale(0.8)}
+    20%{opacity:1; transform:translateY(0) scale(1.1)}
+    100%{opacity:0; transform:translateY(-32px) scale(1)}
+  }
+  .cell.hit { animation:cHit 0.3s ease-out; }
+  @keyframes cHit { 0%{transform:scale(1)} 50%{transform:scale(0.85); filter:brightness(1.4)} 100%{transform:scale(1)} }
+</style>
+</head>
+<body>
+
+<!-- SVG 图标库 -->
+<svg width="0" height="0" style="position:absolute">
+<defs>
+  <symbol id="i-player" viewBox="0 0 24 24" fill="none" stroke="#e94560" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></symbol>
+  <symbol id="i-col" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></symbol>
+  <symbol id="i-work" viewBox="0 0 24 24" fill="none" stroke="#60a5fa" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></symbol>
+  <symbol id="i-project" viewBox="0 0 24 24" fill="none" stroke="#fb923c" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></symbol>
+  <symbol id="i-report" viewBox="0 0 24 24" fill="none" stroke="#a78bfa" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></symbol>
+  <symbol id="i-network" viewBox="0 0 24 24" fill="none" stroke="#4ade80" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></symbol>
+  <symbol id="i-clock" viewBox="0 0 24 24" fill="none" stroke="#f472b6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></symbol>
+  <symbol id="i-slack" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6.5 12c.94-3.46 4.94-6 8.5-6 3.56 0 6.06 2.54 7 6-.94 3.47-3.44 6-7 6s-7.56-2.53-8.5-6z"/><path d="M18 12v.5"/><path d="M16 17.93a9.77 9.77 0 0 1 0-11.86"/><path d="M7 10.67C7 8 5.58 5.97 2.73 5.5c-1 1.5-1 5 .23 6.5-1.24 1.5-1.24 5-.23 6.5C5.58 18.03 7 16 7 13.33"/></symbol>
+  <symbol id="i-fire" viewBox="0 0 24 24" fill="none" stroke="#f87171" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z"/></symbol>
+  <symbol id="i-hr" viewBox="0 0 24 24" fill="none" stroke="#22d3ee" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3h12l-4 6 4 12H8l4-12-4-6z"/></symbol>
+  <symbol id="i-skip" viewBox="0 0 24 24" fill="none" stroke="#34d399" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12h8l2-3 2 6 2-3h6"/></symbol>
+  <symbol id="i-promo" viewBox="0 0 24 24" fill="none" stroke="#ffd700" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"/><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/><path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"/></symbol>
+  <symbol id="i-energy" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></symbol>
+  <symbol id="i-smile" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M8 14s1.5 2 4 2 4-2 4-2"/><line x1="9" y1="9" x2="9.01" y2="9"/><line x1="15" y1="9" x2="15.01" y2="9"/></symbol>
+  <symbol id="i-meh" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="8" y1="15" x2="16" y2="15"/><line x1="9" y1="9" x2="9.01" y2="9"/><line x1="15" y1="9" x2="15.01" y2="9"/></symbol>
+  <symbol id="i-frown" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M16 16s-1.5-2-4-2-4 2-4 2"/><line x1="9" y1="9" x2="9.01" y2="9"/><line x1="15" y1="9" x2="15.01" y2="9"/></symbol>
+  <symbol id="i-reset" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/></symbol>
+  <symbol id="i-help" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></symbol>
+  <symbol id="i-trophy" viewBox="0 0 24 24" fill="none" stroke="#ffd700" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"/><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/><path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"/></symbol>
+  <symbol id="i-skull" viewBox="0 0 24 24" fill="none" stroke="#f87171" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="12" r="1"/><circle cx="15" cy="12" r="1"/><path d="M8 20v2h8v-2"/><path d="M12 2a10 10 0 0 0-8 16v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2A10 10 0 0 0 12 2z"/></symbol>
+  <symbol id="i-sleep" viewBox="0 0 24 24" fill="none" stroke="#60a5fa" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 8c.7 0 1.39.05 2.07.14A2 2 0 0 1 21 10.11v1.39a2 2 0 0 1-2 2h-1"/><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3z"/></symbol>
+  <symbol id="i-briefcase" viewBox="0 0 24 24" fill="none" stroke="#60a5fa" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></symbol>
+  <symbol id="i-star" viewBox="0 0 24 24" fill="none" stroke="#fb923c" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></symbol>
+  <symbol id="i-award" viewBox="0 0 24 24" fill="none" stroke="#a78bfa" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="7"/><polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"/></symbol>
+</defs>
+</svg>
+
+<div class="wrap">
+  <div class="header">
+    <div class="title">升职气 <span class="arrow">↗</span></div>
+    <div class="subtitle">打工人专用 · 职场鉴定 / v2.0</div>
+    <div class="tagline">你负责干活，公司负责解释。</div>
+  </div>
+
+  <!-- 玩家信息卡 -->
+  <div class="player-card card">
+    <div class="player-top">
+      <div class="avatar"><svg><use href="#i-player"/></svg></div>
+      <div class="player-info">
+        <div class="player-name-row">
+          <span class="player-name">你</span>
+          <span class="level-tag" id="levelTag">员工</span>
+        </div>
+        <div class="player-desc" id="playerDesc">刚来的 · 公司评价：新鲜血液</div>
+        <div class="company-say" id="companySay">公司说：欢迎加入。后面的事后面再说。</div>
+      </div>
+    </div>
+    <div class="stats-row">
+      <div class="stat promo"><div class="sv" id="promoScore">0</div><div class="sl">升职气</div></div>
+      <div class="stat work"><div class="sv" id="workScore">0</div><div class="sl">未汇报业绩</div></div>
+      <div class="stat perf"><div class="sv" id="perfGrade">—</div><div class="sl">上次绩效</div></div>
+      <div class="stat turn"><div class="sv" id="turnCount">0</div><div class="sl">总回合</div></div>
+    </div>
+    <div class="timers">
+      <div class="timer attend" id="attendTimer">
+        <span class="tl">考勤倒计时</span>
+        <span class="tv" id="attendCount">8</span>
+      </div>
+      <div class="timer perf">
+        <span class="tl">绩效倒计时</span>
+        <span class="tv" id="perfCount">24</span>
+      </div>
+    </div>
+    <div class="energy-section">
+      <div class="energy-header">
+        <span class="energy-label"><svg><use href="#i-energy"/></svg> 体力</span>
+        <span class="energy-val" id="energyText">100</span>
+      </div>
+      <div class="energy-track"><div class="energy-fill e-high" id="energyBar" style="width:100%"></div></div>
+      <div class="state-row">
+        <div class="state-tag st-good" id="stateTag">
+          <svg><use href="#i-smile"/></svg>
+          <span id="stateText">挺直身板 · 收益100%</span>
+        </div>
+        <div class="records">
+          <span>摸鱼 <b id="slackCount">0</b></span>
+          <span>翘班 <b id="skipCount">0</b></span>
+          <span>晋升 <b id="promoCount">0</b>/<b id="failCount">0</b></span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 同事卡 -->
+  <div class="colleague-card card" id="colleagueCard">
+    <div class="col-avatar"><svg><use href="#i-col"/></svg></div>
+    <div class="col-info">
+      <div class="col-name">罗欣 <span class="col-trait">会来事</span></div>
+      <div class="col-detail" id="colDetail">员工 · 刚来的 · 再2回合行动</div>
+    </div>
+    <div>
+      <div class="col-promo" id="colPromo">20</div>
+      <div class="col-promo-label">升职气</div>
+    </div>
+  </div>
+
+  <!-- 棋盘 -->
+  <div class="board-wrap card" id="boardContainer">
+    <div class="board" id="board">
+      <div class="player" id="player">
+        <div class="player-ring"></div>
+        <div class="player-inner"><svg><use href="#i-player"/></svg></div>
+      </div>
+      <div class="col-on-board" id="colOnBoard">
+        <div class="col-on-board-inner"><svg><use href="#i-col"/></svg></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 日志 -->
+  <div class="log-card card">
+    <div class="log" id="logArea">
+      <p class="lg-info">欢迎加入公司！滑动棋盘或按方向键/WASD开始打工。</p>
+      <p class="lg-warn">注意：小人弯腰冒汗时，再撞救火项目会过劳猝死。</p>
+    </div>
+  </div>
+
+  <div class="hint">滑动 / 拖动棋盘 · 键盘方向键 / WASD · 轻点格子查看详情</div>
+
+  <div class="btn-row">
+    <button class="btn btn-s" onclick="resetGame()"><svg><use href="#i-reset"/></svg> 重新开始</button>
+    <button class="btn btn-p" onclick="showHelp()"><svg><use href="#i-help"/></svg> 游戏说明</button>
+  </div>
+</div>
+
+<!-- 晋升弹窗 -->
+<div class="modal-overlay" id="promotionModal">
+  <div class="modal">
+    <div class="modal-icon mi-gold"><svg><use href="#i-trophy"/></svg></div>
+    <div class="modal-title" id="promoTitle">晋升成功！</div>
+    <div class="modal-desc" id="promoDesc">你从员工晋升为主管！</div>
+    <button class="btn btn-p" onclick="closePromotionModal()">继续打工</button>
+  </div>
+</div>
+
+<!-- 晋升失败弹窗 -->
+<div class="modal-overlay" id="promoFailModal">
+  <div class="modal">
+    <div class="modal-icon mi-error"><svg><use href="#i-frown"/></svg></div>
+    <div class="modal-title">晋升失败</div>
+    <div class="modal-desc" id="promoFailDesc">公司说：再等等。</div>
+    <button class="btn btn-p" onclick="closePromoFailModal()">继续努力</button>
+  </div>
+</div>
+
+<!-- 绩效考核弹窗 -->
+<div class="modal-overlay" id="perfModal">
+  <div class="modal">
+    <div class="modal-icon mi-info"><svg><use href="#i-award"/></svg></div>
+    <div class="modal-title">绩效考核</div>
+    <div class="modal-desc" id="perfDesc">绩效评价：A</div>
+    <button class="btn btn-p" onclick="closePerfModal()">知道了</button>
+  </div>
+</div>
+
+<!-- 游戏结束弹窗 -->
+<div class="modal-overlay" id="gameOverModal">
+  <div class="modal">
+    <div class="modal-icon mi-error" id="gameOverIcon"><svg><use href="#i-skull"/></svg></div>
+    <div class="modal-title" id="gameOverTitle">游戏结束</div>
+    <div class="modal-desc" id="gameOverDesc">你过劳猝死了...</div>
+    <button class="btn btn-p" onclick="resetGame(); closeGameOverModal();">再来一局</button>
+  </div>
+</div>
+
+<!-- 帮助弹窗 -->
+<div class="modal-overlay" id="helpModal">
+  <div class="modal" style="max-width:360px;text-align:left;">
+    <div class="modal-icon mi-info" style="margin:0 auto 14px;"><svg><use href="#i-help"/></svg></div>
+    <div class="modal-title" style="text-align:center;">游戏说明</div>
+    <div class="modal-desc" style="text-align:left;font-size:11px;max-height:340px;overflow-y:auto;">
+      <p style="margin-bottom:8px;"><b>🎯 目标：</b>积累升职气，从员工一路晋升到CEO！小心同事罗欣，她也在竞争晋升。</p>
+      <p style="margin-bottom:8px;"><b>🕹️ 操作：</b>滑动棋盘或按方向键/WASD，小人一冲到底直到撞到格子或边界。</p>
+      <p style="margin-bottom:6px;"><b>格子效果：</b></p>
+      <p style="margin-bottom:3px;">💼 干活：+5业绩，-10体力</p>
+      <p style="margin-bottom:3px;">📋 项目：+15业绩，-20体力</p>
+      <p style="margin-bottom:3px;">📊 汇报：业绩全部转化为升职气</p>
+      <p style="margin-bottom:3px;">🤝 人脉：+8升职气，-5体力</p>
+      <p style="margin-bottom:3px;">🕐 打卡机（常驻）：+25体力，重置考勤倒计时</p>
+      <p style="margin-bottom:3px;">👔 HR（常驻）：随机事件</p>
+      <p style="margin-bottom:3px;">🐟 摸鱼：+35体力，摸鱼记录+1</p>
+      <p style="margin-bottom:3px;">🏖️ 翘班：+50体力，但下一次晋升机会作废！</p>
+      <p style="margin-bottom:8px;">🔥 救火：+30业绩，-40体力（弯腰状态会猝死！）</p>
+      <p style="margin-bottom:6px;"><b>⏰ 回合制压力：</b></p>
+      <p style="margin-bottom:3px;">• 考勤倒计时：归零前必须打卡，否则扣15升职气</p>
+      <p style="margin-bottom:8px;">• 绩效倒计时：归零进行绩效考核，S/A/B/C/D影响升职气</p>
+      <p style="margin-bottom:6px;"><b>⚡ 体力状态：</b></p>
+      <p style="margin-bottom:3px;">😀 挺直(>60)：收益100%</p>
+      <p style="margin-bottom:3px;">😓 耷肩(30-60)：收益75%</p>
+      <p style="margin-bottom:8px;">😵 弯腰(<30)：收益50%，撞救火会猝死</p>
+      <p style="margin-bottom:8px;"><b>🚪 晋升：</b>升职气达标后出现金色晋升门，走上去有成功率（受绩效/考勤/状态影响），可能失败！</p>
+      <p><b>💡 技巧：</b>先干活攒业绩→汇报转化升职气；注意考勤和绩效倒计时；翘班虽爽但会让晋升作废。</p>
+    </div>
+    <button class="btn btn-p" onclick="closeHelpModal()">知道了</button>
+  </div>
+</div>
+
+<script>
+// ============ 配置 ============
+const BOARD = 6;
+const ATTEND_MAX = 8;   // 考勤回合
+const PERF_MAX = 24;    // 绩效回合
+const COL_MOVE_INTERVAL = 2; // 同事每N回合动一次
+
+const LEVELS = [
+  { name:'员工', need:0, desc:'刚来的', eval:'新鲜血液' },
+  { name:'主管', need:60, desc:'刚上任', eval:'潜力新星' },
+  { name:'经理', need:150, desc:'中层骨干', eval:'中流砥柱' },
+  { name:'总监', need:320, desc:'高层管理', eval:'运筹帷幄' },
+  { name:'VP', need:600, desc:'副总裁', eval:'一人之下' },
+  { name:'CEO', need:1000, desc:'首席执行官', eval:'职场王者' }
+];
+
+const CELLS = {
+  empty:{label:'',class:'empty',icon:'',perm:false},
+  work:{label:'干活',class:'work',icon:'#i-work',perm:false},
+  project:{label:'项目',class:'project',icon:'#i-project',perm:false},
+  report:{label:'汇报',class:'report',icon:'#i-report',perm:false},
+  network:{label:'人脉',class:'network',icon:'#i-network',perm:false},
+  clock:{label:'打卡机',class:'clock',icon:'#i-clock',perm:true},
+  slack:{label:'摸鱼',class:'slack',icon:'#i-slack',perm:false},
+  fire:{label:'救火',class:'fire',icon:'#i-fire',perm:false},
+  hr:{label:'HR',class:'hr',icon:'#i-hr',perm:true},
+  skip:{label:'翘班',class:'skip',icon:'#i-skip',perm:false},
+  promotion:{label:'晋升',class:'promotion',icon:'#i-promo',perm:false}
+};
+
+const WEIGHTS = { work:20, project:10, report:10, network:10, slack:12, fire:5, skip:4, empty:15 };
+// clock和hr是常驻，单独放置
+
+// ============ 状态 ============
+let G = {
+  px:2, py:2, board:[],
+  promo:0, work:0, energy:100,
+  level:0, turn:0,
+  attend:ATTEND_MAX, perf:PERF_MAX,
+  lastPerf:'—',
+  slackCount:0, skipCount:0, promoSuccess:0, promoFail:0,
+  skipPenalty:false, // 翘班惩罚：下一次晋升作废
+  moving:false, over:false, promoAvail:false,
+  // 同事
+  col:{ x:4, y:1, promo:20, level:0, moveCounter:0, name:'罗欣', trait:'会来事' }
+};
+
+const boardEl = document.getElementById('board');
+const playerEl = document.getElementById('player');
+const colEl = document.getElementById('colOnBoard');
+const logEl = document.getElementById('logArea');
+
+// ============ 初始化 ============
+function initBoard() {
+  G.board = [];
+  for (let y=0;y<BOARD;y++) G.board.push(Array(BOARD).fill('empty'));
+  G.px = 2; G.py = 2;
+  G.col.x = 4; G.col.y = 1;
+  // 放置常驻格子
+  placePerm();
+  populate();
+}
+
+function placePerm() {
+  // 打卡机和HR各放一个，远离玩家初始位置
+  const positions = [
+    {x:0,y:0},{x:5,y:0},{x:0,y:5},{x:5,y:5},{x:0,y:2},{x:5,y:3}
+  ];
+  const shuffled = positions.sort(()=>Math.random()-0.5);
+  G.board[shuffled[0].y][shuffled[0].x] = 'clock';
+  G.board[shuffled[1].y][shuffled[1].x] = 'hr';
+}
+
+function populate() {
+  const tw = Object.values(WEIGHTS).reduce((a,b)=>a+b,0);
+  for (let y=0;y<BOARD;y++) for (let x=0;x<BOARD;x++) {
+    if (G.board[y][x] !== 'empty') continue;
+    if ((x===G.px&&y===G.py) || (x===G.col.x&&y===G.col.y)) continue;
+    let r = Math.random()*tw;
+    for (const [t,w] of Object.entries(WEIGHTS)) { r-=w; if(r<=0){G.board[y][x]=t;break;} }
+  }
+}
+
+function renderBoard() {
+  boardEl.querySelectorAll('.cell').forEach(c=>c.remove());
+  for (let y=0;y<BOARD;y++) for (let x=0;x<BOARD;x++) {
+    const t = G.board[y][x];
+    const info = CELLS[t];
+    const c = document.createElement('div');
+    c.className = `cell ${info.class}` + (info.perm?' perm':'');
+    c.dataset.x = x; c.dataset.y = y;
+    if (info.icon) c.innerHTML = `<div class="ci"><svg><use href="${info.icon}"/></svg></div><span class="cl">${info.label}</span>`;
+    c.addEventListener('click', ()=>showCellInfo(x,y));
+    boardEl.appendChild(c);
+  }
+  updatePositions();
+}
+
+function updatePositions() {
+  const s = 100/BOARD;
+  playerEl.style.left = `calc(${G.px*s}% + 2px)`;
+  playerEl.style.top = `calc(${G.py*s}% + 2px)`;
+  colEl.style.left = `calc(${G.col.x*s}% + 2px)`;
+  colEl.style.top = `calc(${G.col.y*s}% + 2px)`;
+}
+
+function showCellInfo(x,y) {
+  const t = G.board[y][x];
+  if (t === 'empty') return;
+  const info = CELLS[t];
+  const descs = {
+    work:'干活：+5业绩，-10体力。老老实实搬砖。',
+    project:'项目：+15业绩，-20体力。大项目锻炼人。',
+    report:'汇报：业绩全部转化为升职气。会干的不如会汇报的。',
+    network:'人脉：+8升职气，-5体力。多个朋友多条路。',
+    clock:'打卡机（常驻）：+25体力，重置考勤倒计时。不打卡算旷工。',
+    hr:'HR（常驻）：随机事件。HR找你总没好事...吧？',
+    slack:'摸鱼：+35体力，摸鱼记录+1。摸鱼一时爽，一直摸鱼一直爽。',
+    fire:'救火：+30业绩，-40体力。弯腰状态再救火会过劳猝死！',
+    skip:'翘班：+50体力，但下一次晋升机会作废！翘班一时爽，晋升火葬场。',
+    promotion:'晋升门：走上去尝试晋升，有成功率，可能失败。'
+  };
+  addLog(`📋 ${info.label}：${descs[t]||''}`, 'lg-info');
+}
+
+// ============ UI ============
+function updateUI() {
+  const lvl = LEVELS[G.level];
+  document.getElementById('levelTag').textContent = lvl.name;
+  document.getElementById('playerDesc').textContent = `${lvl.desc} · 公司评价：${lvl.eval}`;
+  document.getElementById('promoScore').textContent = G.promo;
+  document.getElementById('workScore').textContent = G.work;
+  document.getElementById('perfGrade').textContent = G.lastPerf;
+  document.getElementById('turnCount').textContent = G.turn;
+  document.getElementById('energyText').textContent = Math.round(G.energy);
+
+  // 考勤
+  const at = document.getElementById('attendTimer');
+  document.getElementById('attendCount').textContent = G.attend;
+  at.className = 'timer attend';
+  if (G.attend <= 2) at.classList.add('danger');
+  else if (G.attend <= 4) at.classList.add('warn');
+  document.getElementById('perfCount').textContent = G.perf;
+
+  // 体力条
+  const bar = document.getElementById('energyBar');
+  bar.style.width = `${G.energy}%`;
+  bar.className = 'energy-fill';
+  if (G.energy>60) bar.classList.add('e-high');
+  else if (G.energy>30) bar.classList.add('e-mid');
+  else bar.classList.add('e-low');
+
+  // 状态
+  const tag = document.getElementById('stateTag');
+  const st = document.getElementById('stateText');
+  tag.className = 'state-tag';
+  if (G.energy>60) { tag.classList.add('st-good'); tag.querySelector('svg use').setAttribute('href','#i-smile'); st.textContent='挺直身板 · 收益100%'; }
+  else if (G.energy>30) { tag.classList.add('st-mid'); tag.querySelector('svg use').setAttribute('href','#i-meh'); st.textContent='耷肩犯困 · 收益75%'; }
+  else { tag.classList.add('st-bad'); tag.querySelector('svg use').setAttribute('href','#i-frown'); st.textContent='弯腰冒汗 · 收益50%'; }
+
+  // 记录
+  document.getElementById('slackCount').textContent = G.slackCount;
+  document.getElementById('skipCount').textContent = G.skipCount;
+  document.getElementById('promoCount').textContent = G.promoSuccess;
+  document.getElementById('failCount').textContent = G.promoFail;
+
+  // 公司语录
+  const says = [
+    '公司说：欢迎加入。后面的事后面再说。',
+    '公司说：年轻人要多吃苦，吃亏是福。',
+    '公司说：大家都是一家人，谈钱就见外了。',
+    '公司说：加班是因为你效率不够高。',
+    '公司说：你不是为公司打工，是为自己的简历打工。',
+    '公司说：这个项目做好了，好处少不了你的。',
+    '公司说：公司不会亏待每一个努力的人。（大概）'
+  ];
+  if (G.turn > 0 && G.turn % 15 === 0) {
+    document.getElementById('companySay').textContent = says[Math.floor(Math.random()*says.length)];
+  }
+
+  // 同事
+  document.getElementById('colPromo').textContent = G.col.promo;
+  const colLvl = LEVELS[G.col.level];
+  const movesLeft = COL_MOVE_INTERVAL - (G.col.moveCounter % COL_MOVE_INTERVAL);
+  document.getElementById('colDetail').textContent = `${colLvl.name} · ${colLvl.desc} · 再${movesLeft}回合行动`;
+}
+
+function addLog(msg, type='') {
+  const p = document.createElement('p');
+  if (type) p.className = type;
+  p.textContent = msg;
+  logEl.appendChild(p);
+  logEl.scrollTop = logEl.scrollHeight;
+  while (logEl.children.length > 40) logEl.removeChild(logEl.firstChild);
+}
+
+function fx(x,y,text,color) {
+  const s = 100/BOARD;
+  const e = document.createElement('div');
+  e.className = 'fx';
+  e.style.left = `calc(${x*s}% + ${s/2}%)`;
+  e.style.top = `calc(${y*s}% + 6px)`;
+  e.style.color = color;
+  e.textContent = text;
+  boardEl.appendChild(e);
+  setTimeout(()=>e.remove(), 1200);
+}
+
+function hitAnim(x,y) {
+  const c = boardEl.querySelector(`.cell[data-x="${x}"][data-y="${y}"]`);
+  if (c) { c.classList.add('hit'); setTimeout(()=>c.classList.remove('hit'),300); }
+}
+
+// ============ 移动 ============
+function move(dx,dy) {
+  if (G.moving || G.over) return;
+  G.moving = true;
+
+  let nx=G.px, ny=G.py, hit=null, hx=-1, hy=-1;
+  while (true) {
+    const tx=nx+dx, ty=ny+dy;
+    if (tx<0||tx>=BOARD||ty<0||ty>=BOARD) break;
+    // 不能穿过同事
+    if (tx===G.col.x && ty===G.col.y) break;
+    nx=tx; ny=ty;
+    if (G.board[ny][nx] !== 'empty') { hit=G.board[ny][nx]; hx=nx; hy=ny; break; }
+  }
+
+  if (nx===G.px && ny===G.py) { G.moving=false; return; }
+
+  G.px=nx; G.py=ny; G.turn++;
+  updatePositions();
+
+  setTimeout(()=>{
+    if (hit) { hitAnim(hx,hy); collide(hit,hx,hy); }
+    else addLog('滑到了墙边，什么也没发生。','lg-info');
+
+    G.energy = Math.max(0, G.energy-1);
+    G.attend--; G.perf--;
+
+    // 考勤检查
+    if (G.attend <= 0) {
+      G.promo = Math.max(0, G.promo-15);
+      addLog('⚠️ 考勤超时未打卡！扣15升职气。','lg-bad');
+      fx(G.px,G.py,'-15升职气','#f87171');
+      G.attend = ATTEND_MAX;
+    }
+
+    // 绩效检查
+    if (G.perf <= 0) { doPerformance(); G.perf = PERF_MAX; }
+
+    // 同事行动
+    G.col.moveCounter++;
+    if (G.col.moveCounter % COL_MOVE_INTERVAL === 0) colleagueMove();
+
+    checkPromoAvail();
+    updateUI();
+    G.moving=false;
+    checkOver();
+  }, 280);
+}
+
+// ============ 碰撞 ============
+function eff() { if(G.energy>60)return 1; if(G.energy>30)return 0.75; return 0.5; }
+
+function collide(type,x,y) {
+  const e = eff();
+  switch(type) {
+    case 'work': {
+      const g = Math.round(5*e);
+      G.work += g; G.energy = Math.max(0,G.energy-10);
+      fx(x,y,`+${g}业绩`,'#fb923c');
+      addLog(`💼 干活：+${g}业绩，体力-10`,'lg-good');
+      break;
+    }
+    case 'project': {
+      const g = Math.round(15*e);
+      G.work += g; G.energy = Math.max(0,G.energy-20);
+      fx(x,y,`+${g}业绩`,'#fb923c');
+      addLog(`📋 做项目：+${g}业绩，体力-20`,'lg-good');
+      break;
+    }
+    case 'report': {
+      if (G.work>0) {
+        const g = G.work;
+        G.promo += g;
+        fx(x,y,`+${g}升职气`,'#60a5fa');
+        addLog(`📊 汇报工作：${g}业绩 → ${g}升职气！`,'lg-good');
+        G.work = 0;
+      } else addLog('📊 汇报：但你没有业绩可汇报...','lg-warn');
+      G.energy = Math.max(0,G.energy-5);
+      break;
+    }
+    case 'network': {
+      const g = Math.round(8*e);
+      G.promo += g; G.energy = Math.max(0,G.energy-5);
+      fx(x,y,`+${g}升职气`,'#60a5fa');
+      addLog(`🤝 搞人脉：+${g}升职气，体力-5`,'lg-good');
+      break;
+    }
+    case 'clock': {
+      G.energy = Math.min(100,G.energy+25);
+      G.attend = ATTEND_MAX;
+      fx(x,y,'+25体力','#4ade80');
+      addLog(`🕐 打卡上班：体力+25，考勤倒计时重置！`,'lg-good');
+      break;
+    }
+    case 'slack': {
+      G.energy = Math.min(100,G.energy+35);
+      G.slackCount++;
+      fx(x,y,'+35体力','#94a3b8');
+      addLog(`🐟 摸鱼划水：体力+35，真舒服~（摸鱼记录+1）`,'lg-info');
+      break;
+    }
+    case 'fire': {
+      if (G.energy <= 30) {
+        G.energy = 0;
+        fx(x,y,'猝死!','#f87171');
+        addLog('🔥 救火项目：你已经弯腰冒汗了还去救火...过劳猝死！','lg-bad');
+        setTimeout(()=>gameOver('dead'), 600);
+        return;
+      }
+      const g = Math.round(30*e);
+      G.work += g; G.energy = Math.max(0,G.energy-40);
+      fx(x,y,`+${g}业绩`,'#f87171');
+      addLog(`🔥 紧急救火：+${g}业绩，体力-40！累死了...`,'lg-warn');
+      break;
+    }
+    case 'hr': { hrEvent(x,y); break; }
+    case 'skip': {
+      G.energy = Math.min(100,G.energy+50);
+      G.skipCount++;
+      G.skipPenalty = true;
+      fx(x,y,'+50体力','#34d399');
+      addLog('🏖️ 翘班了！体力+50，但下一次晋升机会作废！','lg-warn');
+      break;
+    }
+    case 'promotion': { tryPromotion(); return; }
+  }
+  // 非常驻格子消耗
+  if (!CELLS[type].perm && type !== 'promotion') {
+    G.board[y][x] = 'empty';
+    refill();
+  }
+}
+
+function hrEvent(x,y) {
+  const events = [
+    { msg:'👔 HR表扬你工作认真！+15升职气', fn:()=>{G.promo+=15; fx(x,y,'+15升职气','#60a5fa');}, t:'lg-good' },
+    { msg:'👔 HR批评了你...升职气-10', fn:()=>{G.promo=Math.max(0,G.promo-10); fx(x,y,'-10升职气','#f87171');}, t:'lg-bad' },
+    { msg:'👔 公司下午茶！体力+30', fn:()=>{G.energy=Math.min(100,G.energy+30); fx(x,y,'+30体力','#4ade80');}, t:'lg-good' },
+    { msg:'👔 要加班了...体力-20', fn:()=>{G.energy=Math.max(0,G.energy-20); fx(x,y,'-20体力','#f87171');}, t:'lg-bad' },
+    { msg:'👔 HR给你介绍对象：心情大好！+20升职气，+10体力', fn:()=>{G.promo+=20; G.energy=Math.min(100,G.energy+10); fx(x,y,'+20升职气','#60a5fa');}, t:'lg-good' },
+    { msg:'👔 你考勤不错：+10升职气', fn:()=>{G.promo+=10; fx(x,y,'+10升职气','#60a5fa');}, t:'lg-good' },
+    { msg:'👔 HR说要优化结构...你被约谈了，升职气-15', fn:()=>{G.promo=Math.max(0,G.promo-15); fx(x,y,'-15升职气','#f87171');}, t:'lg-bad' },
+    { msg:'👔 年会抽奖你中了！+25体力', fn:()=>{G.energy=Math.min(100,G.energy+25); fx(x,y,'+25体力','#4ade80');}, t:'lg-good' },
+  ];
+  const ev = events[Math.floor(Math.random()*events.length)];
+  ev.fn();
+  addLog(ev.msg, ev.t);
+}
+
+function refill() {
+  const empty = [];
+  for (let y=0;y<BOARD;y++) for (let x=0;x<BOARD;x++)
+    if (G.board[y][x]==='empty' && !(x===G.px&&y===G.py) && !(x===G.col.x&&y===G.col.y))
+      empty.push({x,y});
+  if (!empty.length) return;
+  const c = empty[Math.floor(Math.random()*empty.length)];
+  const tw = Object.values(WEIGHTS).reduce((a,b)=>a+b,0);
+  let r = Math.random()*tw;
+  for (const [t,w] of Object.entries(WEIGHTS)) { r-=w; if(r<=0){G.board[c.y][c.x]=t;break;} }
+  renderBoard();
+}
+
+// ============ 绩效考核 ============
+function doPerformance() {
+  // 根据业绩、升职气、考勤、状态计算绩效
+  let score = 0;
+  score += Math.min(G.promo, 100) * 0.4;
+  score += Math.min(G.work, 50) * 0.3;
+  score += (G.attend > 4 ? 20 : G.attend > 2 ? 10 : 0);
+  score += (G.energy > 60 ? 15 : G.energy > 30 ? 8 : 0);
+  score += (Math.random()*20 - 10); // 随机因素
+
+  let grade, bonus;
+  if (score >= 70) { grade='S'; bonus=30; }
+  else if (score >= 55) { grade='A'; bonus=20; }
+  else if (score >= 40) { grade='B'; bonus=10; }
+  else if (score >= 25) { grade='C'; bonus=0; }
+  else { grade='D'; bonus=-15; }
+
+  G.lastPerf = grade;
+  G.promo = Math.max(0, G.promo + bonus);
+
+  const gradeColors = { S:'#ffd700', A:'#60a5fa', B:'#4ade80', C:'#fbbf24', D:'#f87171' };
+  const msgs = {
+    S:'公司说：你是楷模！全员向你学习。',
+    A:'公司说：表现不错，继续保持。',
+    B:'公司说：中规中矩，还有提升空间。',
+    C:'公司说：需要反思一下工作态度。',
+    D:'公司说：我们是不是不太合适？'
+  };
+
+  addLog(`📊 绩效考核：${grade}评价！升职气${bonus>=0?'+':''}${bonus}。${msgs[grade]}`, grade==='D'||grade==='C'?'lg-bad':'lg-gold');
+
+  // 显示弹窗
+  document.getElementById('perfDesc').textContent =
+    `绩效评价：${grade}\n\n升职气${bonus>=0?'+':''}${bonus}\n\n${msgs[grade]}\n\n（同事罗欣也在接受考核...）`;
+  document.getElementById('perfModal').classList.add('show');
+
+  // 同事也绩效
+  const colBonus = Math.floor(Math.random()*25) - 5;
+  G.col.promo = Math.max(0, G.col.promo + colBonus);
+}
+
+// ============ 同事AI ============
+function colleagueMove() {
+  // 简单AI：随机方向移动，优先找干活/项目/汇报格子
+  const dirs = [[0,-1],[0,1],[-1,0],[1,0]];
+  // 找最优方向
+  let bestDir = null, bestScore = -1;
+  for (const [dx,dy] of dirs) {
+    let nx=G.col.x, ny=G.col.y, score=0;
+    while (true) {
+      const tx=nx+dx, ty=ny+dy;
+      if (tx<0||tx>=BOARD||ty<0||ty>=BOARD) break;
+      if (tx===G.px&&ty===G.py) break; // 不能穿过玩家
+      nx=tx; ny=ty;
+      const t = G.board[ny][nx];
+      if (t!=='empty') {
+        if (t==='work') score+=5;
+        else if (t==='project') score+=15;
+        else if (t==='report') score+=20;
+        else if (t==='network') score+=8;
+        else if (t==='clock') score+=10;
+        else if (t==='slack') score+=5;
+        else if (t==='fire') score-=10;
+        else if (t==='skip') score+=3;
+        break;
+      }
+    }
+    score += Math.random()*5; // 随机性
+    if (score > bestScore) { bestScore=score; bestDir=[dx,dy]; }
+  }
+
+  if (!bestDir) return;
+  const [dx,dy] = bestDir;
+  let nx=G.col.x, ny=G.col.y, hit=null, hx=-1, hy=-1;
+  while (true) {
+    const tx=nx+dx, ty=ny+dy;
+    if (tx<0||tx>=BOARD||ty<0||ty>=BOARD) break;
+    if (tx===G.px&&ty===G.py) break;
+    nx=tx; ny=ty;
+    if (G.board[ny][nx]!=='empty') { hit=G.board[ny][nx]; hx=nx; hy=ny; break; }
+  }
+
+  if (nx===G.col.x&&ny===G.col.y) return;
+  G.col.x=nx; G.col.y=ny;
+  updatePositions();
+
+  // 同事撞格子
+  if (hit) {
+    setTimeout(()=>{
+      colleagueCollide(hit,hx,hy);
+      renderBoard();
+    }, 200);
+  }
+}
+
+function colleagueCollide(type,x,y) {
+  switch(type) {
+    case 'work': G.col.promo += 3; addLog(`👤 罗欣干了点活，+3升职气`,'lg-col'); break;
+    case 'project': G.col.promo += 10; addLog(`👤 罗欣做了个项目，+10升职气`,'lg-col'); break;
+    case 'report': G.col.promo += 8; addLog(`👤 罗欣汇报了工作，+8升职气`,'lg-col'); break;
+    case 'network': G.col.promo += 6; addLog(`👤 罗欣搞了搞人脉，+6升职气`,'lg-col'); break;
+    case 'clock': addLog(`👤 罗欣去打卡了`,'lg-col'); break;
+    case 'slack': addLog(`👤 罗欣在摸鱼...`,'lg-col'); break;
+    case 'fire': G.col.promo += 15; addLog(`👤 罗欣冲去救火了！+15升职气`,'lg-col'); break;
+    case 'hr': addLog(`👤 罗欣被HR叫走了...`,'lg-col'); break;
+    case 'skip': addLog(`👤 罗欣翘班了！`,'lg-col'); break;
+  }
+  if (!CELLS[type].perm && type!=='promotion') G.board[y][x]='empty';
+}
+
+// ============ 晋升 ============
+function checkPromoAvail() {
+  if (G.level >= LEVELS.length-1) return;
+  const next = LEVELS[G.level+1];
+  if (G.promo >= next.need && !G.promoAvail) {
+    const empty = [];
+    for (let y=0;y<BOARD;y++) for (let x=0;x<BOARD;x++)
+      if (G.board[y][x]==='empty' && !(x===G.px&&y===G.py) && !(x===G.col.x&&y===G.col.y))
+        empty.push({x,y});
+    if (empty.length) {
+      const c = empty[Math.floor(Math.random()*empty.length)];
+      G.board[c.y][c.x] = 'promotion';
+      G.promoAvail = true;
+      renderBoard();
+      if (G.skipPenalty) {
+        addLog(`🚪 晋升机会出现了！但因为翘班记录，这次晋升会作废...`,'lg-warn');
+      } else {
+        addLog(`🚪 晋升机会出现了！走到金色大门尝试晋升为${next.name}！`,'lg-gold');
+      }
+    }
+  }
+}
+
+function tryPromotion() {
+  const oldName = LEVELS[G.level].name;
+
+  // 翘班惩罚
+  if (G.skipPenalty) {
+    G.skipPenalty = false;
+    G.promoAvail = false;
+    G.promoFail++;
+    // 清除晋升门
+    for (let y=0;y<BOARD;y++) for (let x=0;x<BOARD;x++)
+      if (G.board[y][x]==='promotion') G.board[y][x]='empty';
+    addLog('🚫 因为翘班记录，本次晋升机会作废！','lg-bad');
+    document.getElementById('promoFailDesc').textContent =
+      `因为翘班记录，本次晋升机会作废！\n\n公司说：态度有问题，还想晋升？\n\n下次好好表现吧。`;
+    document.getElementById('promoFailModal').classList.add('show');
+    renderBoard();
+    updateUI();
+    return;
+  }
+
+  // 计算成功率
+  let rate = 50; // 基础50%
+  if (G.lastPerf === 'S') rate += 25;
+  else if (G.lastPerf === 'A') rate += 15;
+  else if (G.lastPerf === 'B') rate += 5;
+  else if (G.lastPerf === 'D') rate -= 15;
+  if (G.attend > 4) rate += 10;
+  if (G.energy > 60) rate += 5;
+  if (G.slackCount > 5) rate -= 10;
+  rate = Math.max(10, Math.min(95, rate));
+
+  const success = Math.random() * 100 < rate;
+
+  if (success) {
+    G.level++;
+    const newName = LEVELS[G.level].name;
+    G.promoSuccess++;
+    G.promoAvail = false;
+    G.energy = Math.min(100, G.energy+30);
+
+    for (let y=0;y<BOARD;y++) for (let x=0;x<BOARD;x++)
+      if (G.board[y][x]==='promotion') G.board[y][x]='empty';
+
+    addLog(`🎉 晋升成功！从${oldName} → ${newName}！（成功率${rate}%）体力+30`,'lg-gold');
+
+    document.getElementById('promoTitle').textContent = '晋升成功！';
+    document.getElementById('promoDesc').textContent =
+      `你从「${oldName}」晋升为「${newName}」！\n\n成功率：${rate}%\n当前升职气：${G.promo}\n体力恢复+30\n\n公司说：好好干，以后都是你的。（画饼）`;
+    document.getElementById('promotionModal').classList.add('show');
+
+    renderBoard();
+    updateUI();
+
+    if (G.level >= LEVELS.length-1) {
+      setTimeout(()=>{
+        document.getElementById('promotionModal').classList.remove('show');
+        gameOver('win');
+      }, 2000);
+    }
+  } else {
+    G.promoFail++;
+    G.promoAvail = false;
+    G.promo = Math.max(0, G.promo - 20);
+
+    for (let y=0;y<BOARD;y++) for (let x=0;x<BOARD;x++)
+      if (G.board[y][x]==='promotion') G.board[y][x]='empty';
+
+    addLog(`💔 晋升失败！（成功率${rate}%）扣20升职气。公司说：再等等。`,'lg-bad');
+
+    document.getElementById('promoFailDesc').textContent =
+      `晋升失败！\n\n成功率：${rate}%\n扣20升职气\n\n公司说：再等等，下次一定。\n（每次说下次一定的人，从来没有下次）`;
+    document.getElementById('promoFailModal').classList.add('show');
+
+    renderBoard();
+    updateUI();
+  }
+}
+
+// ============ 游戏结束 ============
+function checkOver() {
+  if (G.energy <= 0 && !G.over) gameOver('exhausted');
+}
+
+function gameOver(reason) {
+  G.over = true;
+  const icon = document.querySelector('#gameOverIcon use');
+  const iconWrap = document.getElementById('gameOverIcon');
+  const title = document.getElementById('gameOverTitle');
+  const desc = document.getElementById('gameOverDesc');
+
+  if (reason === 'win') {
+    icon.setAttribute('href','#i-trophy');
+    iconWrap.className = 'modal-icon mi-gold';
+    title.textContent = '恭喜通关！';
+    desc.textContent = `你成功晋升为CEO！\n\n最终成绩：\n升职气 ${G.promo}\n总回合 ${G.turn}\n打卡 ${G.attend} 次\n摸鱼 ${G.slackCount} 次\n晋升成功 ${G.promoSuccess} 次\n\n同事罗欣最终：${LEVELS[G.col.level].name}，升职气 ${G.col.promo}\n\n你是真正的职场王者！`;
+  } else if (reason === 'dead') {
+    icon.setAttribute('href','#i-skull');
+    iconWrap.className = 'modal-icon mi-error';
+    title.textContent = '过劳猝死';
+    desc.textContent = `你在弯腰冒汗的状态下强行救火，过劳猝死了...\n\n最终成绩：\n职位：${LEVELS[G.level].name}\n升职气：${G.promo}\n回合：${G.turn}\n摸鱼：${G.slackCount} 次\n\n公司说：可惜了，本来明年要给你涨薪的。（明年）\n\n打工人也要注意身体啊！`;
+  } else {
+    icon.setAttribute('href','#i-sleep');
+    iconWrap.className = 'modal-icon mi-info';
+    title.textContent = '体力耗尽';
+    desc.textContent = `你的体力归零，累倒在工位上...\n\n最终成绩：\n职位：${LEVELS[G.level].name}\n升职气：${G.promo}\n回合：${G.turn}\n\n公司说：身体是革命的本钱，好好休息。\n（休息好了继续来加班）\n\n记得多打卡、多摸鱼恢复体力！`;
+  }
+  document.getElementById('gameOverModal').classList.add('show');
+}
+
+// ============ 弹窗 ============
+function closePromotionModal() { document.getElementById('promotionModal').classList.remove('show'); }
+function closePromoFailModal() { document.getElementById('promoFailModal').classList.remove('show'); }
+function closePerfModal() { document.getElementById('perfModal').classList.remove('show'); }
+function closeGameOverModal() { document.getElementById('gameOverModal').classList.remove('show'); }
+function showHelp() { document.getElementById('helpModal').classList.add('show'); }
+function closeHelpModal() { document.getElementById('helpModal').classList.remove('show'); }
+
+// ============ 重置 ============
+function resetGame() {
+  G = {
+    px:2, py:2, board:[],
+    promo:0, work:0, energy:100,
+    level:0, turn:0,
+    attend:ATTEND_MAX, perf:PERF_MAX,
+    lastPerf:'—',
+    slackCount:0, skipCount:0, promoSuccess:0, promoFail:0,
+    skipPenalty:false,
+    moving:false, over:false, promoAvail:false,
+    col:{ x:4, y:1, promo:20, level:0, moveCounter:0, name:'罗欣', trait:'会来事' }
+  };
+  logEl.innerHTML = '<p class="lg-info">新的一天开始了！努力打工吧！</p><p class="lg-warn">注意：小人弯腰冒汗时，再撞救火项目会过劳猝死。</p>';
+  document.getElementById('companySay').textContent = '公司说：欢迎加入。后面的事后面再说。';
+  initBoard();
+  renderBoard();
+  updateUI();
+}
+
+// ============ 输入 ============
+document.addEventListener('keydown', e => {
+  if (G.over) return;
+  const m = { ArrowUp:[0,-1], ArrowDown:[0,1], ArrowLeft:[-1,0], ArrowRight:[1,0],
+    w:[0,-1], W:[0,-1], s:[0,1], S:[0,1], a:[-1,0], A:[-1,0], d:[1,0], D:[1,0] };
+  if (m[e.key]) { e.preventDefault(); move(...m[e.key]); }
+});
+
+let tsx=0, tsy=0;
+const bc = document.getElementById('boardContainer');
+bc.addEventListener('touchstart', e=>{tsx=e.touches[0].clientX;tsy=e.touches[0].clientY;},{passive:true});
+bc.addEventListener('touchend', e=>{
+  if (G.over) return;
+  const dx=e.changedTouches[0].clientX-tsx, dy=e.changedTouches[0].clientY-tsy;
+  if (Math.abs(dx)<20&&Math.abs(dy)<20) return;
+  if (Math.abs(dx)>Math.abs(dy)) move(dx>0?1:-1,0);
+  else move(0,dy>0?1:-1);
+},{passive:true});
+
+let msx=0,msy=0,drag=false;
+bc.addEventListener('mousedown', e=>{drag=true;msx=e.clientX;msy=e.clientY;});
+document.addEventListener('mouseup', e=>{
+  if (!drag||G.over) return;
+  drag=false;
+  const dx=e.clientX-msx, dy=e.clientY-msy;
+  if (Math.abs(dx)<20&&Math.abs(dy)<20) return;
+  if (Math.abs(dx)>Math.abs(dy)) move(dx>0?1:-1,0);
+  else move(0,dy>0?1:-1);
+});
+
+// ============ 启动 ============
+initBoard();
+renderBoard();
+updateUI();
+</script>
+</body>
+</html>
