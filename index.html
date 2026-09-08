@@ -7,17 +7,39 @@
 <style>
   * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
   :root {
-    --bg-1: #1a1a2e; --bg-2: #16213e; --bg-3: #0f3460;
-    --card-bg: rgba(255,255,255,0.06);
-    --card-border: rgba(255,255,255,0.1);
-    --text-primary: #e8e8e8; --text-secondary: #8892a4;
-    --accent: #e94560; --accent2: #ff6b6b;
-    --gold: #ffd700; --green: #4ade80; --blue: #60a5fa;
-    --orange: #fb923c; --purple: #a78bfa; --cyan: #22d3ee;
+    --bg-paper: #f0ebd8;
+    --bg-paper-dark: #e5dfc9;
+    --card-bg: #fff8e9;
+    --card-bg-2: #f5efe0;
+    --card-border: #d4cbb0;
+    --text-primary: #302f2c;
+    --text-secondary: #7c7d6a;
+    --text-muted: #a09d8e;
+    --accent: #ac462c;
+    --accent2: #c85a3a;
+    --accent-light: #f8cdbb;
+    --gold: #c9a227;
+    --gold-light: #f0d890;
+    --green: #607d4d;
+    --green-light: #c5d4b0;
+    --blue: #334754;
+    --blue-light: #b8c4cc;
+    --orange: #c87a3a;
+    --orange-light: #f0d0a8;
+    --purple: #6b5b7a;
+    --purple-light: #d0c5d8;
+    --cyan: #4a7a7a;
+    --cyan-light: #b8d0d0;
+    --pink: #b85a6a;
+    --pink-light: #e8b8c0;
   }
   body {
     font-family: -apple-system, "PingFang SC", "Microsoft YaHei", sans-serif;
-    background: linear-gradient(160deg, var(--bg-1) 0%, var(--bg-2) 50%, var(--bg-3) 100%);
+    background: var(--bg-paper);
+    background-image:
+      radial-gradient(ellipse at 20% 30%, rgba(172, 70, 44, 0.04) 0%, transparent 50%),
+      radial-gradient(ellipse at 80% 70%, rgba(96, 125, 77, 0.04) 0%, transparent 50%),
+      url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");
     background-attachment: fixed;
     color: var(--text-primary);
     min-height: 100vh;
@@ -25,65 +47,77 @@
     padding: 16px 12px 40px; overflow-x: hidden; position: relative;
   }
   body::before {
-    content:''; position:fixed; width:400px; height:400px;
-    background: radial-gradient(circle, rgba(233,69,96,0.15), transparent 70%);
-    top:-150px; right:-100px; border-radius:50%; pointer-events:none;
+    content:''; position:fixed; width:100%; height:100%;
+    background: linear-gradient(180deg, rgba(200,180,140,0.1) 0%, transparent 30%, transparent 70%, rgba(200,180,140,0.08) 100%);
+    top:0; left:0; pointer-events:none; z-index:0;
   }
   body::after {
-    content:''; position:fixed; width:350px; height:350px;
-    background: radial-gradient(circle, rgba(96,165,250,0.12), transparent 70%);
-    bottom:-100px; left:-100px; border-radius:50%; pointer-events:none;
+    content:''; position:fixed; width:300px; height:300px;
+    background: radial-gradient(circle, rgba(201,162,39,0.06), transparent 70%);
+    top:-100px; right:-50px; border-radius:50%; pointer-events:none;
   }
   .wrap { width:100%; max-width:440px; position:relative; z-index:1; }
 
   /* 标题 */
-  .header { text-align:center; margin-bottom:14px; }
+  .header { text-align:center; margin-bottom:14px; position:relative; }
   .title {
     font-size:30px; font-weight:900; letter-spacing:3px;
-    background: linear-gradient(135deg, #fff 0%, #e94560 100%);
-    -webkit-background-clip:text; -webkit-text-fill-color:transparent;
-    background-clip:text; display:flex; align-items:center; justify-content:center; gap:8px;
+    color: var(--text-primary);
+    display:flex; align-items:center; justify-content:center; gap:8px;
+    text-shadow: 1px 1px 0 rgba(255,255,255,0.5);
   }
-  .title .arrow { animation:bounceA 1.5s ease-in-out infinite; -webkit-text-fill-color:#e94560; }
+  .title .arrow { animation:bounceA 1.5s ease-in-out infinite; color: var(--accent); }
   @keyframes bounceA { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-5px)} }
   .subtitle { font-size:11px; color:var(--text-secondary); margin-top:4px; letter-spacing:1px; }
-  .tagline { font-size:12px; color:rgba(233,69,96,0.7); margin-top:6px; font-style:italic; }
+  .tagline { font-size:12px; color:var(--accent); margin-top:6px; font-style:italic; opacity:0.8; }
 
-  /* 玻璃卡片 */
+  /* 纸张卡片 */
   .card {
-    background:var(--card-bg); backdrop-filter:blur(20px);
-    border:1px solid var(--card-border); border-radius:18px;
-    box-shadow:0 8px 32px rgba(0,0,0,0.3);
+    background:var(--card-bg);
+    border:1px solid var(--card-border);
+    border-radius:4px;
+    box-shadow: 2px 2px 0 rgba(0,0,0,0.05), 0 4px 12px rgba(0,0,0,0.06);
+    position: relative;
+  }
+  .card::before {
+    content:''; position:absolute; top:0; left:0; right:0; height:3px;
+    background: linear-gradient(90deg, var(--accent), var(--gold), var(--green));
+    border-radius: 4px 4px 0 0;
+    opacity: 0.6;
   }
 
   /* 玩家信息卡 */
   .player-card { padding:14px 16px; margin-bottom:10px; }
   .player-top { display:flex; align-items:center; gap:12px; margin-bottom:12px; }
   .avatar {
-    width:48px; height:48px; border-radius:14px;
-    background:linear-gradient(135deg, #e94560, #ff6b6b);
+    width:48px; height:48px; border-radius:4px;
+    background: var(--card-bg-2);
+    border: 2px solid var(--accent);
     display:flex; align-items:center; justify-content:center;
-    box-shadow:0 4px 15px rgba(233,69,96,0.4); flex-shrink:0;
+    box-shadow: 2px 2px 0 rgba(172,70,44,0.2);
+    flex-shrink:0;
   }
   .avatar svg { width:28px; height:28px; }
   .player-info { flex:1; min-width:0; }
   .player-name-row { display:flex; align-items:center; gap:8px; }
-  .player-name { font-size:16px; font-weight:700; }
+  .player-name { font-size:16px; font-weight:700; color: var(--text-primary); }
   .level-tag {
-    font-size:10px; padding:2px 8px; border-radius:10px;
-    background:rgba(233,69,96,0.2); color:#ff6b6b; font-weight:600;
+    font-size:10px; padding:2px 8px; border-radius:2px;
+    background: var(--accent); color: var(--card-bg); font-weight:600;
   }
   .player-desc { font-size:11px; color:var(--text-secondary); margin-top:2px; }
   .company-say {
-    font-size:11px; color:rgba(255,215,0,0.6); margin-top:4px;
-    font-style:italic; border-left:2px solid rgba(255,215,0,0.3); padding-left:8px;
+    font-size:11px; color:var(--text-muted); margin-top:4px;
+    font-style:italic; border-left:2px solid var(--gold); padding-left:8px;
+    background: rgba(201,162,39,0.05);
+    padding: 4px 8px;
   }
 
   /* 数值行 */
   .stats-row { display:grid; grid-template-columns:repeat(4,1fr); gap:6px; margin-bottom:10px; }
   .stat {
-    background:rgba(255,255,255,0.04); border-radius:10px; padding:8px 4px;
-    text-align:center; border:1px solid rgba(255,255,255,0.06);
+    background:var(--card-bg-2); border-radius:2px; padding:8px 4px;
+    text-align:center; border:1px solid var(--card-border);
   }
   .stat .sv { font-size:16px; font-weight:800; line-height:1.1; }
   .stat .sl { font-size:9px; color:var(--text-secondary); margin-top:3px; }
@@ -95,15 +129,15 @@
   /* 回合倒计时 */
   .timers { display:flex; gap:8px; margin-bottom:10px; }
   .timer {
-    flex:1; background:rgba(255,255,255,0.04); border-radius:10px;
+    flex:1; background:var(--card-bg-2); border-radius:2px;
     padding:6px 10px; display:flex; align-items:center; justify-content:space-between;
-    border:1px solid rgba(255,255,255,0.06);
+    border:1px solid var(--card-border);
   }
   .timer .tl { font-size:10px; color:var(--text-secondary); }
   .timer .tv { font-size:13px; font-weight:700; }
   .timer.attend .tv { color:var(--green); }
   .timer.attend.warn .tv { color:var(--orange); }
-  .timer.attend.danger .tv { color:var(--accent2); }
+  .timer.attend.danger .tv { color:var(--accent); }
   .timer.perf .tv { color:var(--purple); }
 
   /* 体力条 */
@@ -111,88 +145,94 @@
   .energy-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:5px; }
   .energy-label { font-size:11px; color:var(--text-secondary); display:flex; align-items:center; gap:4px; }
   .energy-label svg { width:12px; height:12px; }
-  .energy-val { font-size:12px; font-weight:700; }
-  .energy-track { height:8px; background:rgba(0,0,0,0.3); border-radius:4px; overflow:hidden; }
+  .energy-val { font-size:12px; font-weight:700; color: var(--text-primary); }
+  .energy-track { height:8px; background:var(--bg-paper-dark); border-radius:2px; overflow:hidden; border:1px solid var(--card-border); }
   .energy-fill {
-    height:100%; border-radius:4px; transition:width 0.4s, background 0.4s;
+    height:100%; border-radius:1px; transition:width 0.4s, background 0.4s;
     position:relative; overflow:hidden;
   }
   .energy-fill::after {
     content:''; position:absolute; top:0; left:0; right:0; height:50%;
-    background:linear-gradient(to bottom, rgba(255,255,255,0.25), transparent);
+    background:linear-gradient(to bottom, rgba(255,255,255,0.3), transparent);
   }
-  .e-high { background:linear-gradient(90deg, #4ade80, #22c55e); }
-  .e-mid { background:linear-gradient(90deg, #fbbf24, #f59e0b); }
-  .e-low { background:linear-gradient(90deg, #f87171, #ef4444); }
+  .e-high { background:linear-gradient(90deg, var(--green), #4a6b3a); }
+  .e-mid { background:linear-gradient(90deg, var(--orange), #a06020); }
+  .e-low { background:linear-gradient(90deg, var(--accent), #803020); }
   .state-row { display:flex; align-items:center; justify-content:space-between; margin-top:8px; }
   .state-tag {
     display:inline-flex; align-items:center; gap:4px; font-size:10px; font-weight:600;
-    padding:3px 10px; border-radius:10px;
+    padding:3px 10px; border-radius:2px; border:1px solid;
   }
   .state-tag svg { width:11px; height:11px; }
-  .st-good { background:rgba(74,222,128,0.15); color:#4ade80; }
-  .st-mid { background:rgba(251,191,36,0.15); color:#fbbf24; }
-  .st-bad { background:rgba(248,113,113,0.15); color:#f87171; }
+  .st-good { background:var(--green-light); color:var(--green); border-color: var(--green); }
+  .st-mid { background:var(--orange-light); color:var(--orange); border-color: var(--orange); }
+  .st-bad { background:var(--accent-light); color:var(--accent); border-color: var(--accent); }
   .records { font-size:10px; color:var(--text-secondary); }
   .records span { margin-left:8px; }
+  .records b { color: var(--text-primary); }
 
   /* 同事卡 */
-  .colleague-card { padding:10px 14px; margin-bottom:10px; display:flex; align-items:center; gap:10px; }
+  .colleague-card { padding:10px 14px; margin-bottom:10px; display:flex; align-items:center; gap:10px; background: var(--card-bg-2); }
   .col-avatar {
-    width:36px; height:36px; border-radius:10px;
-    background:linear-gradient(135deg, #a78bfa, #8b5cf6);
+    width:36px; height:36px; border-radius:4px;
+    background: var(--card-bg);
+    border: 2px solid var(--purple);
     display:flex; align-items:center; justify-content:center; flex-shrink:0;
-    box-shadow:0 2px 10px rgba(167,139,250,0.3);
+    box-shadow: 2px 2px 0 rgba(107,91,122,0.2);
   }
   .col-avatar svg { width:20px; height:20px; }
   .col-info { flex:1; min-width:0; }
-  .col-name { font-size:13px; font-weight:600; display:flex; align-items:center; gap:6px; }
-  .col-trait { font-size:9px; padding:1px 6px; border-radius:8px; background:rgba(167,139,250,0.2); color:#c4b5fd; }
+  .col-name { font-size:13px; font-weight:600; display:flex; align-items:center; gap:6px; color: var(--text-primary); }
+  .col-trait { font-size:9px; padding:1px 6px; border-radius:2px; background:var(--purple); color:var(--card-bg); }
   .col-detail { font-size:10px; color:var(--text-secondary); margin-top:2px; }
   .col-promo { font-size:14px; font-weight:800; color:var(--purple); text-align:right; }
   .col-promo-label { font-size:9px; color:var(--text-secondary); }
 
   /* 棋盘 */
-  .board-wrap { padding:10px; margin-bottom:10px; touch-action:none; position:relative; }
+  .board-wrap { padding:12px; margin-bottom:10px; touch-action:none; position:relative; background: var(--bg-paper-dark); }
   .board {
     display:grid; grid-template-columns:repeat(6,1fr); gap:4px;
     aspect-ratio:1; position:relative;
+    background: var(--bg-paper-dark);
+    padding: 4px;
+    border: 2px solid var(--card-border);
   }
   .cell {
-    border-radius:10px; display:flex; flex-direction:column;
+    border-radius:2px; display:flex; flex-direction:column;
     align-items:center; justify-content:center; position:relative;
     transition:transform 0.15s; user-select:none; overflow:hidden;
-    border:1px solid rgba(255,255,255,0.08);
+    border:1px solid var(--card-border);
+    background: var(--card-bg);
   }
   .cell::before {
-    content:''; position:absolute; top:0; left:0; right:0; height:50%;
-    background:linear-gradient(to bottom, rgba(255,255,255,0.08), transparent);
+    content:''; position:absolute; top:0; left:0; right:0; height:40%;
+    background:linear-gradient(to bottom, rgba(255,255,255,0.3), transparent);
     pointer-events:none;
   }
   .cell .ci { width:24px; height:24px; display:flex; align-items:center; justify-content:center; }
   .cell .ci svg { width:100%; height:100%; }
-  .cell .cl { font-size:8px; margin-top:1px; opacity:0.7; font-weight:600; }
-  .cell.perm { border:1px solid rgba(255,215,0,0.4); box-shadow:0 0 8px rgba(255,215,0,0.15); }
+  .cell .cl { font-size:8px; margin-top:1px; opacity:0.8; font-weight:600; color: var(--text-primary); }
+  .cell.perm { border:2px solid var(--blue); box-shadow: inset 0 0 0 1px rgba(51,71,84,0.2); }
   .cell.perm::after {
-    content:'常驻'; position:absolute; top:2px; right:3px; font-size:7px;
-    color:rgba(255,215,0,0.6); font-weight:700;
+    content:'固定'; position:absolute; top:1px; right:2px; font-size:6px;
+    color:var(--blue); font-weight:700; background: rgba(51,71,84,0.1); padding: 0 2px;
   }
-  .cell.work { background:linear-gradient(135deg, rgba(96,165,250,0.2), rgba(59,130,246,0.15)); }
-  .cell.project { background:linear-gradient(135deg, rgba(251,146,60,0.2), rgba(249,115,22,0.15)); }
-  .cell.report { background:linear-gradient(135deg, rgba(167,139,250,0.2), rgba(139,92,246,0.15)); }
-  .cell.network { background:linear-gradient(135deg, rgba(74,222,128,0.2), rgba(34,197,94,0.15)); }
-  .cell.clock { background:linear-gradient(135deg, rgba(244,114,182,0.2), rgba(236,72,153,0.15)); }
-  .cell.slack { background:linear-gradient(135deg, rgba(148,163,184,0.2), rgba(100,116,139,0.15)); }
-  .cell.fire { background:linear-gradient(135deg, rgba(248,113,113,0.25), rgba(239,68,68,0.2)); }
-  .cell.hr { background:linear-gradient(135deg, rgba(34,211,238,0.2), rgba(6,182,212,0.15)); }
-  .cell.skip { background:linear-gradient(135deg, rgba(52,211,153,0.2), rgba(16,185,129,0.15)); }
+  .cell.work { background: var(--card-bg); }
+  .cell.project { background: var(--orange-light); }
+  .cell.report { background: var(--accent-light); }
+  .cell.network { background: var(--green-light); }
+  .cell.clock { background: var(--blue-light); }
+  .cell.slack { background: var(--card-bg-2); }
+  .cell.fire { background: var(--accent-light); border-color: var(--accent); }
+  .cell.hr { background: var(--cyan-light); }
+  .cell.skip { background: var(--purple-light); }
   .cell.promotion {
-    background:linear-gradient(135deg, rgba(255,215,0,0.3), rgba(251,191,36,0.2));
+    background: var(--gold-light);
     animation:promoP 1.5s ease-in-out infinite;
-    box-shadow:0 0 15px rgba(255,215,0,0.3);
+    border: 2px solid var(--gold);
   }
-  .cell.empty { background:rgba(255,255,255,0.02); border:1px dashed rgba(255,255,255,0.05); }
-  @keyframes promoP { 0%,100%{transform:scale(1)} 50%{transform:scale(1.06)} }
+  .cell.empty { background: var(--bg-paper-dark); border:1px dashed var(--card-border); }
+  @keyframes promoP { 0%,100%{transform:scale(1)} 50%{transform:scale(1.05)} }
 
   /* 玩家 */
   .player {
@@ -202,19 +242,21 @@
     pointer-events:none;
   }
   .player-inner {
-    width:78%; height:78%; border-radius:50%;
-    background:linear-gradient(135deg, #fff, #e0e0e0);
+    width:78%; height:78%; border-radius:4px;
+    background: var(--card-bg);
+    border: 3px solid var(--accent);
     display:flex; align-items:center; justify-content:center;
-    box-shadow:0 4px 15px rgba(0,0,0,0.4), 0 0 0 2px rgba(255,255,255,0.3), 0 0 15px rgba(233,69,96,0.4);
+    box-shadow: 2px 2px 0 rgba(172,70,44,0.3);
     animation:pFloat 2s ease-in-out infinite;
   }
   @keyframes pFloat { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-2px)} }
   .player-inner svg { width:60%; height:60%; }
   .player-ring {
-    position:absolute; inset:-3px; border-radius:50%;
-    border:2px solid rgba(233,69,96,0.3); animation:rPulse 2s ease-in-out infinite;
+    position:absolute; inset:-3px; border-radius:4px;
+    border:2px solid var(--accent); animation:rPulse 2s ease-in-out infinite;
+    opacity: 0.5;
   }
-  @keyframes rPulse { 0%,100%{transform:scale(1); opacity:0.5} 50%{transform:scale(1.15); opacity:0} }
+  @keyframes rPulse { 0%,100%{transform:scale(1); opacity:0.3} 50%{transform:scale(1.1); opacity:0} }
 
   /* 同事在棋盘上 */
   .col-on-board {
@@ -223,67 +265,75 @@
     transition:left 0.3s, top 0.3s; pointer-events:none;
   }
   .col-on-board-inner {
-    width:70%; height:70%; border-radius:50%;
-    background:linear-gradient(135deg, #a78bfa, #7c3aed);
+    width:70%; height:70%; border-radius:4px;
+    background: var(--card-bg);
+    border: 2px solid var(--purple);
     display:flex; align-items:center; justify-content:center;
-    box-shadow:0 2px 10px rgba(124,58,237,0.4);
+    box-shadow: 2px 2px 0 rgba(107,91,122,0.3);
   }
   .col-on-board-inner svg { width:55%; height:55%; }
 
   /* 日志 */
-  .log-card { padding:10px 14px; margin-bottom:10px; max-height:85px; overflow-y:auto; }
+  .log-card { padding:10px 14px; margin-bottom:10px; max-height:85px; overflow-y:auto; background: var(--card-bg-2); }
   .log-card::-webkit-scrollbar { width:3px; }
-  .log-card::-webkit-scrollbar-thumb { background:rgba(255,255,255,0.15); border-radius:2px; }
-  .log { font-size:11px; line-height:1.7; }
+  .log-card::-webkit-scrollbar-thumb { background:var(--card-border); border-radius:2px; }
+  .log { font-size:11px; line-height:1.7; color: var(--text-primary); }
   .log p { margin-bottom:1px; }
-  .lg-good { color:#4ade80; }
-  .lg-bad { color:#f87171; }
-  .lg-info { color:#60a5fa; }
-  .lg-warn { color:#fbbf24; }
-  .lg-gold { color:#ffd700; }
-  .lg-col { color:#c4b5fd; }
+  .lg-good { color:var(--green); }
+  .lg-bad { color:var(--accent); }
+  .lg-info { color:var(--blue); }
+  .lg-warn { color:var(--orange); }
+  .lg-gold { color:var(--gold); }
+  .lg-col { color:var(--purple); }
 
   /* 提示 */
   .hint { text-align:center; font-size:10px; color:var(--text-secondary); margin-bottom:10px; }
   .btn-row { display:flex; gap:8px; margin-bottom:10px; }
   .btn {
-    flex:1; padding:11px; border:none; border-radius:12px; font-size:12px;
+    flex:1; padding:11px; border:none; border-radius:2px; font-size:12px;
     font-weight:700; cursor:pointer; transition:transform 0.15s, opacity 0.2s;
     display:flex; align-items:center; justify-content:center; gap:5px;
+    border: 2px solid;
   }
   .btn:active { transform:scale(0.96); }
   .btn svg { width:14px; height:14px; }
-  .btn-p { background:linear-gradient(135deg, #e94560, #ff6b6b); color:#fff; box-shadow:0 4px 15px rgba(233,69,96,0.3); }
-  .btn-s { background:rgba(255,255,255,0.08); color:var(--text-primary); border:1px solid rgba(255,255,255,0.1); }
+  .btn-p { background: var(--accent); color: var(--card-bg); border-color: var(--accent); box-shadow: 2px 2px 0 rgba(172,70,44,0.3); }
+  .btn-s { background: var(--card-bg); color: var(--text-primary); border-color: var(--card-border); box-shadow: 2px 2px 0 rgba(0,0,0,0.05); }
 
   /* 弹窗 */
   .modal-overlay {
     position:fixed; top:0; left:0; right:0; bottom:0;
-    background:rgba(0,0,0,0.7); backdrop-filter:blur(8px);
+    background:rgba(48,47,44,0.6); backdrop-filter:blur(4px);
     display:flex; align-items:center; justify-content:center; z-index:100;
     opacity:0; pointer-events:none; transition:opacity 0.3s;
   }
   .modal-overlay.show { opacity:1; pointer-events:auto; }
   .modal {
-    background:linear-gradient(160deg, #1e1e3a, #16213e);
-    border:1px solid rgba(255,255,255,0.1); border-radius:22px;
+    background: var(--card-bg);
+    border:2px solid var(--card-border); border-radius:4px;
     padding:28px 22px; max-width:340px; width:90%; text-align:center;
     transform:scale(0.85) translateY(20px); transition:transform 0.4s cubic-bezier(0.34,1.56,0.64,1);
-    box-shadow:0 20px 60px rgba(0,0,0,0.5);
+    box-shadow: 4px 4px 0 rgba(0,0,0,0.1), 0 10px 40px rgba(0,0,0,0.15);
+    position: relative;
+  }
+  .modal::before {
+    content:''; position:absolute; top:0; left:0; right:0; height:4px;
+    background: linear-gradient(90deg, var(--accent), var(--gold), var(--green));
   }
   .modal-overlay.show .modal { transform:scale(1) translateY(0); }
   .modal-icon {
-    width:68px; height:68px; margin:0 auto 14px; border-radius:50%;
+    width:68px; height:68px; margin:0 auto 14px; border-radius:4px;
     display:flex; align-items:center; justify-content:center;
     animation:mPop 0.5s cubic-bezier(0.34,1.56,0.64,1);
+    border: 2px solid;
   }
   @keyframes mPop { 0%{transform:scale(0) rotate(-180deg)} 100%{transform:scale(1) rotate(0)} }
   .modal-icon svg { width:36px; height:36px; }
-  .mi-success { background:linear-gradient(135deg, rgba(74,222,128,0.2), rgba(34,197,94,0.15)); }
-  .mi-error { background:linear-gradient(135deg, rgba(248,113,113,0.2), rgba(239,68,68,0.15)); }
-  .mi-info { background:linear-gradient(135deg, rgba(96,165,250,0.2), rgba(59,130,246,0.15)); }
-  .mi-gold { background:linear-gradient(135deg, rgba(255,215,0,0.2), rgba(251,191,36,0.15)); }
-  .modal-title { font-size:20px; font-weight:800; margin-bottom:8px; }
+  .mi-success { background: var(--green-light); border-color: var(--green); }
+  .mi-error { background: var(--accent-light); border-color: var(--accent); }
+  .mi-info { background: var(--blue-light); border-color: var(--blue); }
+  .mi-gold { background: var(--gold-light); border-color: var(--gold); }
+  .modal-title { font-size:20px; font-weight:800; margin-bottom:8px; color: var(--text-primary); }
   .modal-desc { font-size:12px; color:var(--text-secondary); line-height:1.7; margin-bottom:20px; white-space:pre-line; }
   .modal .btn { width:100%; }
   .modal .btn + .btn { margin-top:8px; }
@@ -292,7 +342,7 @@
   .fx {
     position:absolute; font-size:12px; font-weight:800; z-index:20;
     pointer-events:none; animation:fUp 1.2s cubic-bezier(0.4,0,0.2,1) forwards;
-    text-shadow:0 1px 3px rgba(0,0,0,0.5); white-space:nowrap;
+    text-shadow: 1px 1px 0 rgba(255,255,255,0.8); white-space:nowrap;
   }
   @keyframes fUp {
     0%{opacity:0; transform:translateY(5px) scale(0.8)}
@@ -300,7 +350,7 @@
     100%{opacity:0; transform:translateY(-32px) scale(1)}
   }
   .cell.hit { animation:cHit 0.3s ease-out; }
-  @keyframes cHit { 0%{transform:scale(1)} 50%{transform:scale(0.85); filter:brightness(1.4)} 100%{transform:scale(1)} }
+  @keyframes cHit { 0%{transform:scale(1)} 50%{transform:scale(0.85); filter:brightness(1.1)} 100%{transform:scale(1)} }
 
   /* ============ 移动端优化 ============ */
   @media (max-width: 480px) {
@@ -444,18 +494,18 @@
 <!-- SVG 图标库 -->
 <svg width="0" height="0" style="position:absolute">
 <defs>
-  <symbol id="i-player" viewBox="0 0 24 24" fill="none" stroke="#e94560" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></symbol>
+  <symbol id="i-player" viewBox="0 0 24 24" fill="none" stroke="#ac462c" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></symbol>
   <symbol id="i-col" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></symbol>
-  <symbol id="i-work" viewBox="0 0 24 24" fill="none" stroke="#60a5fa" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></symbol>
-  <symbol id="i-project" viewBox="0 0 24 24" fill="none" stroke="#fb923c" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></symbol>
-  <symbol id="i-report" viewBox="0 0 24 24" fill="none" stroke="#a78bfa" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></symbol>
-  <symbol id="i-network" viewBox="0 0 24 24" fill="none" stroke="#4ade80" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></symbol>
-  <symbol id="i-clock" viewBox="0 0 24 24" fill="none" stroke="#f472b6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></symbol>
-  <symbol id="i-slack" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6.5 12c.94-3.46 4.94-6 8.5-6 3.56 0 6.06 2.54 7 6-.94 3.47-3.44 6-7 6s-7.56-2.53-8.5-6z"/><path d="M18 12v.5"/><path d="M16 17.93a9.77 9.77 0 0 1 0-11.86"/><path d="M7 10.67C7 8 5.58 5.97 2.73 5.5c-1 1.5-1 5 .23 6.5-1.24 1.5-1.24 5-.23 6.5C5.58 18.03 7 16 7 13.33"/></symbol>
-  <symbol id="i-fire" viewBox="0 0 24 24" fill="none" stroke="#f87171" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z"/></symbol>
-  <symbol id="i-hr" viewBox="0 0 24 24" fill="none" stroke="#22d3ee" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3h12l-4 6 4 12H8l4-12-4-6z"/></symbol>
-  <symbol id="i-skip" viewBox="0 0 24 24" fill="none" stroke="#34d399" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12h8l2-3 2 6 2-3h6"/></symbol>
-  <symbol id="i-promo" viewBox="0 0 24 24" fill="none" stroke="#ffd700" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"/><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/><path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"/></symbol>
+  <symbol id="i-work" viewBox="0 0 24 24" fill="none" stroke="#334754" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></symbol>
+  <symbol id="i-project" viewBox="0 0 24 24" fill="none" stroke="#c87a3a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></symbol>
+  <symbol id="i-report" viewBox="0 0 24 24" fill="none" stroke="#6b5b7a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></symbol>
+  <symbol id="i-network" viewBox="0 0 24 24" fill="none" stroke="#607d4d" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></symbol>
+  <symbol id="i-clock" viewBox="0 0 24 24" fill="none" stroke="#b85a6a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></symbol>
+  <symbol id="i-slack" viewBox="0 0 24 24" fill="none" stroke="#7c7d6a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6.5 12c.94-3.46 4.94-6 8.5-6 3.56 0 6.06 2.54 7 6-.94 3.47-3.44 6-7 6s-7.56-2.53-8.5-6z"/><path d="M18 12v.5"/><path d="M16 17.93a9.77 9.77 0 0 1 0-11.86"/><path d="M7 10.67C7 8 5.58 5.97 2.73 5.5c-1 1.5-1 5 .23 6.5-1.24 1.5-1.24 5-.23 6.5C5.58 18.03 7 16 7 13.33"/></symbol>
+  <symbol id="i-fire" viewBox="0 0 24 24" fill="none" stroke="#ac462c" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z"/></symbol>
+  <symbol id="i-hr" viewBox="0 0 24 24" fill="none" stroke="#4a7a7a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3h12l-4 6 4 12H8l4-12-4-6z"/></symbol>
+  <symbol id="i-skip" viewBox="0 0 24 24" fill="none" stroke="#6b5b7a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12h8l2-3 2 6 2-3h6"/></symbol>
+  <symbol id="i-promo" viewBox="0 0 24 24" fill="none" stroke="#c9a227" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"/><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/><path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"/></symbol>
   <symbol id="i-energy" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></symbol>
   <symbol id="i-smile" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M8 14s1.5 2 4 2 4-2 4-2"/><line x1="9" y1="9" x2="9.01" y2="9"/><line x1="15" y1="9" x2="15.01" y2="9"/></symbol>
   <symbol id="i-meh" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="8" y1="15" x2="16" y2="15"/><line x1="9" y1="9" x2="9.01" y2="9"/><line x1="15" y1="9" x2="15.01" y2="9"/></symbol>
@@ -466,8 +516,8 @@
   <symbol id="i-skull" viewBox="0 0 24 24" fill="none" stroke="#f87171" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="12" r="1"/><circle cx="15" cy="12" r="1"/><path d="M8 20v2h8v-2"/><path d="M12 2a10 10 0 0 0-8 16v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2A10 10 0 0 0 12 2z"/></symbol>
   <symbol id="i-sleep" viewBox="0 0 24 24" fill="none" stroke="#60a5fa" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 8c.7 0 1.39.05 2.07.14A2 2 0 0 1 21 10.11v1.39a2 2 0 0 1-2 2h-1"/><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3z"/></symbol>
   <symbol id="i-briefcase" viewBox="0 0 24 24" fill="none" stroke="#60a5fa" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></symbol>
-  <symbol id="i-star" viewBox="0 0 24 24" fill="none" stroke="#fb923c" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></symbol>
-  <symbol id="i-award" viewBox="0 0 24 24" fill="none" stroke="#a78bfa" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="7"/><polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"/></symbol>
+  <symbol id="i-star" viewBox="0 0 24 24" fill="none" stroke="#c87a3a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></symbol>
+  <symbol id="i-award" viewBox="0 0 24 24" fill="none" stroke="#6b5b7a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="7"/><polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"/></symbol>
 </defs>
 </svg>
 
@@ -885,7 +935,7 @@ function move(dx,dy) {
     if (G.attend <= 0) {
       G.promo = Math.max(0, G.promo-15);
       addLog('⚠️ 考勤超时未打卡！扣15升职气。','lg-bad');
-      fx(G.px,G.py,'-15升职气','#f87171');
+      fx(G.px,G.py,'-15升职气','#ac462c');
       G.attend = ATTEND_MAX;
     }
 
@@ -912,14 +962,14 @@ function collide(type,x,y) {
     case 'work': {
       const g = Math.round(5*e);
       G.work += g; G.energy = Math.max(0,G.energy-10);
-      fx(x,y,`+${g}业绩`,'#fb923c');
+      fx(x,y,`+${g}业绩`,'#c87a3a');
       addLog(`💼 干活：+${g}业绩，体力-10`,'lg-good');
       break;
     }
     case 'project': {
       const g = Math.round(15*e);
       G.work += g; G.energy = Math.max(0,G.energy-20);
-      fx(x,y,`+${g}业绩`,'#fb923c');
+      fx(x,y,`+${g}业绩`,'#c87a3a');
       addLog(`📋 做项目：+${g}业绩，体力-20`,'lg-good');
       break;
     }
@@ -927,7 +977,7 @@ function collide(type,x,y) {
       if (G.work>0) {
         const g = G.work;
         G.promo += g;
-        fx(x,y,`+${g}升职气`,'#60a5fa');
+        fx(x,y,`+${g}升职气`,'#334754');
         addLog(`📊 汇报工作：${g}业绩 → ${g}升职气！`,'lg-good');
         G.work = 0;
       } else addLog('📊 汇报：但你没有业绩可汇报...','lg-warn');
@@ -937,35 +987,35 @@ function collide(type,x,y) {
     case 'network': {
       const g = Math.round(8*e);
       G.promo += g; G.energy = Math.max(0,G.energy-5);
-      fx(x,y,`+${g}升职气`,'#60a5fa');
+      fx(x,y,`+${g}升职气`,'#334754');
       addLog(`🤝 搞人脉：+${g}升职气，体力-5`,'lg-good');
       break;
     }
     case 'clock': {
       G.energy = Math.min(100,G.energy+25);
       G.attend = ATTEND_MAX;
-      fx(x,y,'+25体力','#4ade80');
+      fx(x,y,'+25体力','#607d4d');
       addLog(`🕐 打卡上班：体力+25，考勤倒计时重置！`,'lg-good');
       break;
     }
     case 'slack': {
       G.energy = Math.min(100,G.energy+35);
       G.slackCount++;
-      fx(x,y,'+35体力','#94a3b8');
+      fx(x,y,'+35体力','#7c7d6a');
       addLog(`🐟 摸鱼划水：体力+35，真舒服~（摸鱼记录+1）`,'lg-info');
       break;
     }
     case 'fire': {
       if (G.energy <= 30) {
         G.energy = 0;
-        fx(x,y,'猝死!','#f87171');
+        fx(x,y,'猝死!','#ac462c');
         addLog('🔥 救火项目：你已经弯腰冒汗了还去救火...过劳猝死！','lg-bad');
         setTimeout(()=>gameOver('dead'), 600);
         return;
       }
       const g = Math.round(30*e);
       G.work += g; G.energy = Math.max(0,G.energy-40);
-      fx(x,y,`+${g}业绩`,'#f87171');
+      fx(x,y,`+${g}业绩`,'#ac462c');
       addLog(`🔥 紧急救火：+${g}业绩，体力-40！累死了...`,'lg-warn');
       break;
     }
@@ -974,7 +1024,7 @@ function collide(type,x,y) {
       G.energy = Math.min(100,G.energy+50);
       G.skipCount++;
       G.skipPenalty = true;
-      fx(x,y,'+50体力','#34d399');
+      fx(x,y,'+50体力','#607d4d');
       addLog('🏖️ 翘班了！体力+50，但下一次晋升机会作废！','lg-warn');
       break;
     }
@@ -989,14 +1039,14 @@ function collide(type,x,y) {
 
 function hrEvent(x,y) {
   const events = [
-    { msg:'👔 HR表扬你工作认真！+15升职气', fn:()=>{G.promo+=15; fx(x,y,'+15升职气','#60a5fa');}, t:'lg-good' },
-    { msg:'👔 HR批评了你...升职气-10', fn:()=>{G.promo=Math.max(0,G.promo-10); fx(x,y,'-10升职气','#f87171');}, t:'lg-bad' },
-    { msg:'👔 公司下午茶！体力+30', fn:()=>{G.energy=Math.min(100,G.energy+30); fx(x,y,'+30体力','#4ade80');}, t:'lg-good' },
-    { msg:'👔 要加班了...体力-20', fn:()=>{G.energy=Math.max(0,G.energy-20); fx(x,y,'-20体力','#f87171');}, t:'lg-bad' },
-    { msg:'👔 HR给你介绍对象：心情大好！+20升职气，+10体力', fn:()=>{G.promo+=20; G.energy=Math.min(100,G.energy+10); fx(x,y,'+20升职气','#60a5fa');}, t:'lg-good' },
-    { msg:'👔 你考勤不错：+10升职气', fn:()=>{G.promo+=10; fx(x,y,'+10升职气','#60a5fa');}, t:'lg-good' },
-    { msg:'👔 HR说要优化结构...你被约谈了，升职气-15', fn:()=>{G.promo=Math.max(0,G.promo-15); fx(x,y,'-15升职气','#f87171');}, t:'lg-bad' },
-    { msg:'👔 年会抽奖你中了！+25体力', fn:()=>{G.energy=Math.min(100,G.energy+25); fx(x,y,'+25体力','#4ade80');}, t:'lg-good' },
+    { msg:'👔 HR表扬你工作认真！+15升职气', fn:()=>{G.promo+=15; fx(x,y,'+15升职气','#334754');}, t:'lg-good' },
+    { msg:'👔 HR批评了你...升职气-10', fn:()=>{G.promo=Math.max(0,G.promo-10); fx(x,y,'-10升职气','#ac462c');}, t:'lg-bad' },
+    { msg:'👔 公司下午茶！体力+30', fn:()=>{G.energy=Math.min(100,G.energy+30); fx(x,y,'+30体力','#607d4d');}, t:'lg-good' },
+    { msg:'👔 要加班了...体力-20', fn:()=>{G.energy=Math.max(0,G.energy-20); fx(x,y,'-20体力','#ac462c');}, t:'lg-bad' },
+    { msg:'👔 HR给你介绍对象：心情大好！+20升职气，+10体力', fn:()=>{G.promo+=20; G.energy=Math.min(100,G.energy+10); fx(x,y,'+20升职气','#334754');}, t:'lg-good' },
+    { msg:'👔 你考勤不错：+10升职气', fn:()=>{G.promo+=10; fx(x,y,'+10升职气','#334754');}, t:'lg-good' },
+    { msg:'👔 HR说要优化结构...你被约谈了，升职气-15', fn:()=>{G.promo=Math.max(0,G.promo-15); fx(x,y,'-15升职气','#ac462c');}, t:'lg-bad' },
+    { msg:'👔 年会抽奖你中了！+25体力', fn:()=>{G.energy=Math.min(100,G.energy+25); fx(x,y,'+25体力','#607d4d');}, t:'lg-good' },
   ];
   const ev = events[Math.floor(Math.random()*events.length)];
   ev.fn();
@@ -1036,7 +1086,7 @@ function doPerformance() {
   G.lastPerf = grade;
   G.promo = Math.max(0, G.promo + bonus);
 
-  const gradeColors = { S:'#ffd700', A:'#60a5fa', B:'#4ade80', C:'#fbbf24', D:'#f87171' };
+  const gradeColors = { S:'#c9a227', A:'#334754', B:'#607d4d', C:'#c87a3a', D:'#ac462c' };
   const msgs = {
     S:'公司说：你是楷模！全员向你学习。',
     A:'公司说：表现不错，继续保持。',
