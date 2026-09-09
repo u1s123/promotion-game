@@ -721,6 +721,7 @@
 
   <div class="btn-row">
     <button class="btn btn-s" onclick="resetGame()"><svg><use href="#i-reset"/></svg> 重新开始</button>
+    <button class="btn btn-s" onclick="showAchievements()"><svg><use href="#i-help"/></svg> 🏆 成就</button>
     <button class="btn btn-p" onclick="showHelp()"><svg><use href="#i-help"/></svg> 游戏说明</button>
   </div>
 </div>
@@ -761,7 +762,7 @@
     <div class="modal-img-wrap"><img src="" alt="游戏结束" class="modal-img" id="gameOverModalImg"></div>
     <div class="modal-title" id="gameOverTitle">游戏结束</div>
     <div class="modal-desc" id="gameOverDesc">你过劳猝死了...</div>
-    <button class="btn btn-p" onclick="resetGame(); closeGameOverModal();">再来一局</button>
+    <button class="btn btn-p" onclick="closeGameOverModal(); resetGame();">再来一局</button>
   </div>
 </div>
 
@@ -796,6 +797,14 @@
       <p style="margin-bottom:8px;"><b>🚪 晋升：</b>升职气达标后出现金色晋升门，走上去有成功率（基础40%，受绩效/考勤/状态影响），可能失败扣20升职气！</p>
       <p><b>💡 技巧：</b>先干活攒业绩→汇报转化升职气；注意考勤和绩效倒计时；离王总远点避免被派活；翘班虽爽但会让晋升作废。</p>
     </div>
+<!-- 成就弹窗 -->
+<div class="modal-overlay" id="achievementModal">
+  <div class="modal" style="max-width:380px;">
+    <div id="achievementContent"></div>
+    <button class="btn btn-p" onclick="closeAchievementModal()" style="margin-top:12px;">关闭</button>
+  </div>
+</div>
+
     <button class="btn btn-p" onclick="closeHelpModal()">知道了</button>
   </div>
 </div>
@@ -1269,6 +1278,8 @@ function move(dx,dy) {
     updateUI();
     G.moving=false;
     checkOver();
+    // 自动存档
+    if (!G.over) saveGame();
   }, 500);
 }
 
@@ -1967,7 +1978,155 @@ function gameOver(reason) {
 
   modal.classList.add('show');
   renderBoard();
+  
+  // 更新统计和成就
+  const newAch = updateStats(reason);
+  if (newAch.length > 0) {
+    setTimeout(() => {
+      let achMsg = '🏆 解锁新成就：\n';
+      for (const ach of newAch) {
+        achMsg += ach.icon + ' ' + ach.name + ' - "' + ach.quote + '"\n';
+      }
+      alert(achMsg);
+    }, 1500);
+  }
+  
+  // 游戏结束后删除存档
+  deleteSave();
 }
+
+// ============ 存档系统 ============
+function saveGame() {
+  try {
+    const saveData = {
+      G: JSON.parse(JSON.stringify(G)),
+      timestamp: Date.now()
+    };
+    localStorage.setItem('promotionGame_save', JSON.stringify(saveData));
+    return true;
+  } catch(e) { return false; }
+}
+
+function loadGame() {
+  try {
+    const saveStr = localStorage.getItem('promotionGame_save');
+    if (!saveStr) return false;
+    const saveData = JSON.parse(saveStr);
+    G = saveData.G;
+    renderBoard();
+    updateUI();
+    addLog('📂 已读取存档，继续打工！','lg-info');
+    return true;
+  } catch(e) { return false; }
+}
+
+function hasSave() {
+  return localStorage.getItem('promotionGame_save') !== null;
+}
+
+function deleteSave() {
+  localStorage.removeItem('promotionGame_save');
+}
+
+// ============ 成就系统 ==========
+const ACHIEVEMENTS = {
+  first_step: { name:'初入职场', desc:'完成第一局游戏', quote:'千里之行，始于足下。', icon:'🎯', condition:(s)=>s.gamesPlayed >= 1 },
+  hard_worker: { name:'拼命三郎', desc:'单局摸鱼少于3次', quote:'奋斗的青春最美丽。', icon:'💪', condition:(s)=>s.minSlack <= 2 && s.gamesPlayed >= 1 },
+  slacker: { name:'摸鱼大师', desc:'单局摸鱼超过20次', quote:'摸鱼一时爽，一直摸鱼一直爽。', icon:'🐟', condition:(s)=>s.maxSlack >= 20 },
+  survivor: { name:'苟活之王', desc:'单局存活超过50回合', quote:'好死不如赖活着。', icon:'🐢', condition:(s)=>s.maxTurn >= 50 },
+  legend: { name:'职场传奇', desc:'晋升到经理级别', quote:'不想当将军的士兵不是好士兵。', icon:'👔', condition:(s)=>s.maxLevel >= 2 },
+  ceo_dream: { name:'CEO梦想家', desc:'晋升到总监级别', quote:'梦想还是要有的，万一实现了呢。', icon:'🏢', condition:(s)=>s.maxLevel >= 3 },
+  winner: { name:'人生赢家', desc:'成功晋升CEO', quote:'你终于活成了自己年轻时讨厌的样子。', icon:'👑', condition:(s)=>s.winCount >= 1 },
+  dead_worker: { name:'过劳死', desc:'因救火过劳猝死', quote:'公司少了你照样转，但你家少了你就塌了。', icon:'💀', condition:(s)=>s.deadCount >= 1 },
+  exhausted: { name:'累倒了', desc:'体力耗尽累倒', quote:'你不是在工作，你是在被工作。', icon:'😴', condition:(s)=>s.exhaustedCount >= 1 },
+  promo_master: { name:'晋升达人', desc:'累计晋升成功10次', quote:'升职加薪，走上人生巅峰。', icon:'📈', condition:(s)=>s.totalPromoSuccess >= 10 },
+  coffee_lover: { name:'咖啡续命', desc:'单局喝超过10杯咖啡', quote:'咖啡是打工人的生命之源。', icon:'☕', condition:(s)=>s.maxCoffee >= 10 },
+  network_king: { name:'人脉王', desc:'单局搞人脉超过15次', quote:'多个朋友多条路。', icon:'🤝', condition:(s)=>s.maxNetwork >= 15 },
+  fire_fighter: { name:'救火队员', desc:'单局救火超过8次', quote:'哪里有火，哪里就有我。', icon:'🔥', condition:(s)=>s.maxFire >= 8 },
+  skip_master: { name:'翘班达人', desc:'单局翘班超过5次', quote:'翘班一时爽，晋升火葬场。', icon:'🏖️', condition:(s)=>s.maxSkip >= 5 },
+  comeback: { name:'绝地反击', desc:'晋升失败后成功晋升', quote:'从哪里跌倒，就从哪里爬起来。', icon:'🔄', condition:(s)=>s.comebackCount >= 1 },
+  veteran: { name:'老油条', desc:'累计游玩超过10局', quote:'姜还是老的辣。', icon:'🎖️', condition:(s)=>s.gamesPlayed >= 10 },
+  perfectionist: { name:'完美主义者', desc:'单局绩效获得S级', quote:'没有最好，只有更好。', icon:'⭐', condition:(s)=>s.sCount >= 1 },
+  rich: { name:'升职气富翁', desc:'单局升职气超过500', quote:'有钱能使鬼推磨。', icon:'💰', condition:(s)=>s.maxPromo >= 500 }
+};
+
+function getStats() {
+  try {
+    const statsStr = localStorage.getItem('promotionGame_stats');
+    if (statsStr) return JSON.parse(statsStr);
+  } catch(e) {}
+  return {
+    gamesPlayed: 0, winCount: 0, deadCount: 0, exhaustedCount: 0,
+    maxLevel: 0, maxTurn: 0, maxSlack: 0, minSlack: 999,
+    maxPromo: 0, totalPromoSuccess: 0, maxCoffee: 0, maxNetwork: 0,
+    maxFire: 0, maxSkip: 0, comebackCount: 0, sCount: 0
+  };
+}
+
+function saveStats(stats) {
+  try {
+    localStorage.setItem('promotionGame_stats', JSON.stringify(stats));
+  } catch(e) {}
+}
+
+function updateStats(reason) {
+  const stats = getStats();
+  stats.gamesPlayed++;
+  if (reason === 'win') stats.winCount++;
+  else if (reason === 'dead') stats.deadCount++;
+  else if (reason === 'exhausted') stats.exhaustedCount++;
+  
+  stats.maxLevel = Math.max(stats.maxLevel, G.level);
+  stats.maxTurn = Math.max(stats.maxTurn, G.turn);
+  stats.maxSlack = Math.max(stats.maxSlack, G.slackCount);
+  stats.minSlack = Math.min(stats.minSlack, G.slackCount);
+  stats.maxPromo = Math.max(stats.maxPromo, G.promo);
+  stats.totalPromoSuccess += G.promoSuccess;
+  
+  // 检查新解锁的成就
+  const newAchievements = [];
+  for (const [id, ach] of Object.entries(ACHIEVEMENTS)) {
+    if (!stats.unlockedAchievements) stats.unlockedAchievements = [];
+    if (!stats.unlockedAchievements.includes(id) && ach.condition(stats)) {
+      stats.unlockedAchievements.push(id);
+      newAchievements.push(ach);
+    }
+  }
+  
+  saveStats(stats);
+  return newAchievements;
+}
+
+function showAchievements() {
+  const stats = getStats();
+  const unlocked = stats.unlockedAchievements || [];
+  let html = '<div style="text-align:center;margin-bottom:12px;"><span style="font-size:18px;font-weight:bold;color:#334754;">🏆 成就殿堂</span></div>';
+  html += '<div style="font-size:11px;color:#6b6358;margin-bottom:12px;text-align:center;">已解锁 ' + unlocked.length + ' / ' + Object.keys(ACHIEVEMENTS).length + ' 个成就</div>';
+  html += '<div style="max-height:320px;overflow-y:auto;">';
+  
+  for (const [id, ach] of Object.entries(ACHIEVEMENTS)) {
+    const isUnlocked = unlocked.includes(id);
+    html += '<div style="padding:8px;margin-bottom:6px;border-radius:6px;' + (isUnlocked ? 'background:#f0ebe0;border:1px solid #d4c9b0;' : 'background:#f5f5f5;border:1px solid #e0e0e0;opacity:0.5;') + '">';
+    html += '<div style="display:flex;align-items:center;gap:8px;">';
+    html += '<span style="font-size:20px;">' + (isUnlocked ? ach.icon : '🔒') + '</span>';
+    html += '<div style="flex:1;">';
+    html += '<div style="font-weight:bold;font-size:12px;color:' + (isUnlocked ? '#334754' : '#999') + ';">' + ach.name + '</div>';
+    html += '<div style="font-size:10px;color:#6b6358;">' + ach.desc + '</div>';
+    if (isUnlocked) {
+      html += '<div style="font-size:10px;color:#ac462c;font-style:italic;margin-top:2px;">"' + ach.quote + '"</div>';
+    }
+    html += '</div></div></div>';
+  }
+  html += '</div>';
+  
+  document.getElementById('achievementContent').innerHTML = html;
+  document.getElementById('achievementModal').classList.add('show');
+}
+
+function closeAchievementModal() {
+  document.getElementById('achievementModal').classList.remove('show');
+}
+
 
 // ============ 弹窗 ============
 function closePromotionModal() { document.getElementById('promotionModal').classList.remove('show'); }
@@ -1988,13 +2147,24 @@ function resetGame() {
     slackCount:0, skipCount:0, promoSuccess:0, promoFail:0,
     skipPenalty:false,
     moving:false, over:false, promoAvail:false,
-    col:{ x:4, y:1, promo:20, level:0, moveCounter:0, name:'罗欣', trait:'会来事' }
+    bossType:'wang',
+    col:{ x:4, y:1, promo:30, level:0, moveCounter:0, name:'罗欣', trait:'会来事' },
+    boss:{ x:1, y:4, promo:200, level:2, moveCounter:0, name:'王建国', trait:'爱抢功', title:'王总' },
+    gm:{ x:1, y:4, promo:450, level:3, moveCounter:0, name:'陈道明', trait:'爱吃咖啡', title:'陈总' },
+    cellAges: []
   };
+  // 重置上级显示
+  document.getElementById('bossCard').classList.remove('hidden');
+  document.getElementById('bossOnBoard').classList.remove('hidden');
+  document.getElementById('gmCard').classList.add('hidden');
+  document.getElementById('gmOnBoard').classList.add('hidden');
   logEl.innerHTML = '<p class="lg-info">新的一天开始了！努力打工吧！</p><p class="lg-warn">注意：小人弯腰冒汗时，再撞救火项目会过劳猝死。</p>';
   document.getElementById('companySay').textContent = '公司说：欢迎加入。后面的事后面再说。';
   initBoard();
   renderBoard();
   updateUI();
+  // 自动存档
+  saveGame();
 }
 
 // ============ 输入 ============
