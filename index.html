@@ -559,6 +559,96 @@
   .cell.tempwork .age-badge { background:#c87a3a; }
   .cell.promotion .age-badge { background:#c9a227; }
   .cell.project .age-badge { background:#8b6914; }
+  
+  /* 游戏开始界面 */
+  .start-screen {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg, #f5f0e6 0%, #e8e0d0 100%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    padding: 20px;
+    box-sizing: border-box;
+    overflow-y: auto;
+  }
+  .start-screen.hidden {
+    display: none;
+  }
+  .start-title {
+    font-size: 48px;
+    font-weight: bold;
+    color: #334754;
+    margin-bottom: 10px;
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+  }
+  .start-title .arrow {
+    color: #c9a227;
+  }
+  .start-subtitle {
+    font-size: 18px;
+    color: #6b5b7a;
+    margin-bottom: 20px;
+  }
+  .start-tagline {
+    font-size: 14px;
+    color: #8b7355;
+    margin-bottom: 30px;
+    font-style: italic;
+  }
+  .start-rules {
+    background: rgba(255,255,255,0.8);
+    border-radius: 12px;
+    padding: 20px;
+    max-width: 500px;
+    width: 100%;
+    margin-bottom: 30px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  }
+  .start-rules h3 {
+    margin: 0 0 15px 0;
+    color: #334754;
+    font-size: 16px;
+  }
+  .start-rules p {
+    margin: 8px 0;
+    font-size: 13px;
+    color: #555;
+    line-height: 1.6;
+  }
+  .start-rules .highlight {
+    color: #c9a227;
+    font-weight: bold;
+  }
+  .start-btn {
+    background: linear-gradient(135deg, #c9a227 0%, #b8941f 100%);
+    color: white;
+    border: none;
+    padding: 16px 60px;
+    font-size: 20px;
+    font-weight: bold;
+    border-radius: 30px;
+    cursor: pointer;
+    box-shadow: 0 4px 15px rgba(201,162,39,0.4);
+    transition: all 0.3s ease;
+  }
+  .start-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(201,162,39,0.5);
+  }
+  .start-btn:active {
+    transform: translateY(0);
+  }
+  .start-footer {
+    margin-top: 30px;
+    font-size: 12px;
+    color: #999;
+  }
 </style>
 </head>
 <body>
@@ -595,6 +685,29 @@
   <symbol id="i-award" viewBox="0 0 24 24" fill="none" stroke="#6b5b7a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="7"/><polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"/></symbol>
 </defs>
 </svg>
+
+<!-- 游戏开始界面 -->
+<div class="start-screen" id="startScreen">
+  <div class="start-title">升职气 <span class="arrow">↗</span></div>
+  <div class="start-subtitle">打工人专用 · 职场鉴定</div>
+  <div class="start-tagline">你负责干活，公司负责解释。</div>
+  
+  <div class="start-rules">
+    <h3>🎮 游戏规则</h3>
+    <p>🎯 <span class="highlight">目标：</span>积累升职气，从员工一路晋升到CEO！</p>
+    <p>🕹️ <span class="highlight">操作：</span>滑动棋盘 / 键盘方向键 / WASD 移动</p>
+    <p>💼 <span class="highlight">格子：</span>干活、项目、汇报积累业绩和升职气</p>
+    <p>⚡ <span class="highlight">体力：</span>注意体力，摸鱼、咖啡、打卡可恢复</p>
+    <p>📊 <span class="highlight">压力：</span>考勤6回合、绩效18回合倒计时</p>
+    <p>👔 <span class="highlight">竞争：</span>同事罗欣和上级王总都在抢晋升机会</p>
+    <p>🚪 <span class="highlight">晋升：</span>升职气达标后出现金色晋升门，走上去尝试晋升</p>
+    <p>⚠️ <span class="highlight">警告：</span>翘班可能被开除，体力耗尽会过劳猝死！</p>
+  </div>
+  
+  <button class="start-btn" onclick="startGame()">开始游戏</button>
+  
+  <div class="start-footer">提示：晋升CEO几乎不可能，祝你好运！</div>
+</div>
 
 <div class="wrap">
   <div class="header">
@@ -887,6 +1000,7 @@ let G = {
   moving:false, over:false, promoAvail:false,
   bossType:'wang', // 当前上级类型：wang=王总, gm=总经理
   permType:'clock', // 当前常驻格子类型：clock=打卡机, hr=HR
+  permCooldown:0, // 常驻格子冷却时间（回合）
   // 同事罗欣
   col:{ x:4, y:1, promo:30, level:0, moveCounter:0, name:'罗欣', trait:'会来事' },
   // 上级王总（经理级，爱抢功）
@@ -1285,6 +1399,8 @@ function move(dx,dy) {
       G.promo += autoConvert;
       G.work -= autoConvert;
     }
+    // 减少常驻格子冷却时间
+    if (G.permCooldown > 0) G.permCooldown--;
 
     // 上级相邻检查
     const supAdj = Math.abs(G.px-superior.x) + Math.abs(G.py-superior.y) === 1;
@@ -1358,17 +1474,17 @@ function collide(type,x,y) {
   const e = eff();
   switch(type) {
     case 'work': {
-      const g = Math.round(5*e);
+      const g = Math.round(6*e);
       const p = Math.round(g * 0.3);
-      G.work += g; G.promo += p; G.energy = Math.max(0,G.energy-8);
+      G.work += g; G.promo += p; G.energy = Math.max(0,G.energy-7);
       fx(x,y,`+${g}业绩 +${p}升职气`,'#c87a3a');
       addLog(`💼 干活：+${g}业绩，+${p}升职气，体力-8`,'lg-good');
       break;
     }
     case 'project': {
-      const g = Math.round(15*e);
+      const g = Math.round(18*e);
       const p = Math.round(g * 0.4);
-      G.work += g; G.promo += p; G.energy = Math.max(0,G.energy-15);
+      G.work += g; G.promo += p; G.energy = Math.max(0,G.energy-13);
       fx(x,y,`+${g}业绩 +${p}升职气`,'#c87a3a');
       addLog(`📋 做项目：+${g}业绩，+${p}升职气，体力-15`,'lg-good');
       break;
@@ -1385,17 +1501,23 @@ function collide(type,x,y) {
       break;
     }
     case 'network': {
-      const g = Math.round(8*e);
-      G.promo += g; G.energy = Math.max(0,G.energy-5);
+      const g = Math.round(10*e);
+      G.promo += g; G.energy = Math.max(0,G.energy-4);
       fx(x,y,`+${g}升职气`,'#334754');
       addLog(`🤝 搞人脉：+${g}升职气，体力-5`,'lg-good');
       break;
     }
     case 'clock': {
+      if (G.permCooldown > 0) {
+        fx(x,y,'冷却中','#999');
+        addLog(`🕐 打卡机冷却中（还剩${G.permCooldown}回合），先去干点别的吧。`,'lg-warn');
+        break;
+      }
       G.energy = Math.min(100,G.energy+25);
       G.attend = ATTEND_MAX;
+      G.permCooldown = 3;
       fx(x,y,'+25体力','#607d4d');
-      addLog(`🕐 打卡上班：体力+25，考勤倒计时重置！`,'lg-good');
+      addLog(`🕐 打卡上班：体力+25，考勤倒计时重置！（3回合后可再次打卡）`,'lg-good');
       break;
     }
     case 'slack': {
@@ -1413,14 +1535,23 @@ function collide(type,x,y) {
         setTimeout(()=>gameOver('dead'), 600);
         return;
       }
-      const g = Math.round(25*e);
+      const g = Math.round(30*e);
       const p = Math.round(g * 0.5);
-      G.work += g; G.promo += p; G.energy = Math.max(0,G.energy-30);
+      G.work += g; G.promo += p; G.energy = Math.max(0,G.energy-25);
       fx(x,y,`+${g}业绩 +${p}升职气`,'#ac462c');
       addLog(`🔥 紧急救火：+${g}业绩，+${p}升职气，体力-30！累死了...`,'lg-warn');
       break;
     }
-    case 'hr': { hrEvent(x,y); break; }
+    case 'hr': {
+      if (G.permCooldown > 0) {
+        fx(x,y,'冷却中','#999');
+        addLog(`👔 HR冷却中（还剩${G.permCooldown}回合），稍后再来吧。`,'lg-warn');
+        break;
+      }
+      G.permCooldown = 3;
+      hrEvent(x,y);
+      break;
+    }
     case 'skip': {
       G.energy = Math.min(100,G.energy+40);
       G.skipCount++;
@@ -1443,9 +1574,9 @@ function collide(type,x,y) {
       break;
     }
     case 'tempwork': {
-      const g = Math.round(8*e);
+      const g = Math.round(10*e);
       const p = Math.round(g * 0.3);
-      G.work += g; G.promo += p; G.energy = Math.max(0,G.energy-6);
+      G.work += g; G.promo += p; G.energy = Math.max(0,G.energy-5);
       fx(x,y,`+${g}业绩 +${p}升职气`,'#8b6914');
       addLog(`📋 临时工作：+${g}业绩，+${p}升职气，体力-6（3回合不处理会变成救火！）`,'lg-warn');
       break;
@@ -1901,9 +2032,9 @@ function gmCollide(type,x,y) {
     case 'hr': addLog(`☕ 陈总和HR谈了谈组织架构调整...`,'lg-info'); break;
     case 'skip': addLog(`☕ 陈总提前走了（高管的事能叫翘班吗）`,'lg-info'); break;
     case 'tempwork': {
-      const g = Math.round(8*e);
+      const g = Math.round(10*e);
       const p = Math.round(g * 0.3);
-      G.work += g; G.promo += p; G.energy = Math.max(0,G.energy-6);
+      G.work += g; G.promo += p; G.energy = Math.max(0,G.energy-5);
       fx(x,y,`+${g}业绩 +${p}升职气`,'#8b6914');
       addLog(`📋 临时工作：+${g}业绩，+${p}升职气，体力-6（3回合不处理会变成救火！）`,'lg-warn');
       break;
@@ -1965,7 +2096,7 @@ function tryPromotion() {
   // 计算成功率 - 根据升职气超过门槛的程度
   const nextNeed = LEVELS[G.level+1].need;
   const overRatio = (G.promo - nextNeed) / nextNeed;
-  let rate = 15 + Math.min(35, overRatio * 80); // 基础15%，超过门槛越多成功率越高
+  let rate = 25 + Math.min(35, overRatio * 80); // 基础25%，超过门槛越多成功率越高
   // 绩效影响更大
   if (G.lastPerf === 'S') rate += 25;
   else if (G.lastPerf === 'A') rate += 15;
@@ -2371,10 +2502,16 @@ document.addEventListener('mouseup', e=>{
   else move(0,dy>0?1:-1);
 });
 
+// ============ 开始游戏 ============
+function startGame() {
+  document.getElementById('startScreen').classList.add('hidden');
+  initBoard();
+  renderBoard();
+  updateUI();
+}
+
 // ============ 启动 ============
-initBoard();
-renderBoard();
-updateUI();
+// 不自动启动，等待用户点击开始游戏按钮
 </script>
 </body>
 </html>
