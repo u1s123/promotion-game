@@ -885,6 +885,7 @@ let G = {
   skipPenalty:false, // 翘班惩罚：下一次晋升作废
   moving:false, over:false, promoAvail:false,
   bossType:'wang', // 当前上级类型：wang=王总, gm=总经理
+  permType:'clock', // 当前常驻格子类型：clock=打卡机, hr=HR
   // 同事罗欣
   col:{ x:4, y:1, promo:30, level:0, moveCounter:0, name:'罗欣', trait:'会来事' },
   // 上级王总（经理级，爱抢功）
@@ -1014,24 +1015,36 @@ function placePerm() {
   const size = getBoardSize();
   const positions = [
     {x:0,y:0},{x:size-1,y:0},{x:0,y:size-1},{x:size-1,y:size-1},
-    {x:0,y:Math.floor(size/2)},{x:size-1,y:Math.floor(size/2)}
+    {x:0,y:Math.floor(size/2)},{x:size-1,y:Math.floor(size/2)},
+    {x:Math.floor(size/2),y:0},{x:Math.floor(size/2),y:size-1}
   ];
   const shuffled = positions.sort(()=>Math.random()-0.5);
-  G.board[shuffled[0].y][shuffled[0].x] = 'clock';
+  // 打卡机跟HR只能有一个，随机选择
+  const permType = Math.random() < 0.5 ? 'clock' : 'hr';
+  G.board[shuffled[0].y][shuffled[0].x] = permType;
   G.cellAges[shuffled[0].y][shuffled[0].x] = 0;
-  G.board[shuffled[1].y][shuffled[1].x] = 'hr';
-  G.cellAges[shuffled[1].y][shuffled[1].x] = 0;
+  G.permType = permType; // 记录当前常驻格子类型
 }
 
 function populate() {
   const size = getBoardSize();
   const sup = G.bossType === 'gm' ? G.gm : G.boss;
-  const tw = Object.values(WEIGHTS).reduce((a,b)=>a+b,0);
+  // 咖啡跟摸鱼只会刷新一个，随机选择，刷新频率降低
+  let initWeights = {...WEIGHTS};
+  const relaxType = Math.random() < 0.5 ? 'coffee' : 'slack';
+  if (relaxType === 'coffee') {
+    initWeights.coffee = 2;
+    initWeights.slack = 0;
+  } else {
+    initWeights.coffee = 0;
+    initWeights.slack = 5;
+  }
+  const tw = Object.values(initWeights).reduce((a,b)=>a+b,0);
   for (let y=0;y<size;y++) for (let x=0;x<size;x++) {
     if (G.board[y][x] !== 'empty') continue;
     if ((x===G.px&&y===G.py) || (x===G.col.x&&y===G.col.y) || (x===sup.x&&y===sup.y)) continue;
     let r = Math.random()*tw;
-    for (const [t,w] of Object.entries(WEIGHTS)) { r-=w; if(r<=0){G.board[y][x]=t;G.cellAges[y][x]=0;break;} }
+    for (const [t,w] of Object.entries(initWeights)) { r-=w; if(r<=0){G.board[y][x]=t;G.cellAges[y][x]=0;break;} }
   }
 }
 
@@ -1486,6 +1499,16 @@ function refill() {
     weights.tempwork = 15;
     weights.coffee = 5;
     weights.skip = 3;
+  }
+  
+  // 咖啡跟摸鱼只会刷新一个，随机选择，刷新频率降低
+  const relaxType = Math.random() < 0.5 ? 'coffee' : 'slack';
+  if (relaxType === 'coffee') {
+    weights.coffee = Math.max(1, Math.floor(weights.coffee * 0.3));
+    weights.slack = 0;
+  } else {
+    weights.coffee = 0;
+    weights.slack = Math.max(1, Math.floor(weights.slack * 0.4));
   }
   
   // 每次刷新1-3个格子（后期刷新更多）
