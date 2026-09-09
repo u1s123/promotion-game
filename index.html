@@ -848,11 +848,11 @@ const BOSS_UPGRADE_LEVEL = 2; // 玩家升到多少级时换上级（经理级�
 
 const LEVELS = [
   { name:'员工', need:0, desc:'刚来的', eval:'新鲜血液' },
-  { name:'主管', need:200, desc:'刚上任', eval:'潜力新星' },
-  { name:'经理', need:500, desc:'中层骨干', eval:'中流砥柱' },
-  { name:'总监', need:1000, desc:'高层管理', eval:'运筹帷幄' },
-  { name:'VP', need:2000, desc:'副总裁', eval:'一人之下' },
-  { name:'CEO', need:5000, desc:'首席执行官', eval:'职场王者' }
+  { name:'主管', need:50, desc:'刚上任', eval:'潜力新星' },
+  { name:'经理', need:150, desc:'中层骨干', eval:'中流砥柱' },
+  { name:'总监', need:350, desc:'高层管理', eval:'运筹帷幄' },
+  { name:'VP', need:700, desc:'副总裁', eval:'一人之下' },
+  { name:'CEO', need:2000, desc:'首席执行官', eval:'职场王者' }
 ];
 
 const CELLS = {
@@ -872,7 +872,7 @@ const CELLS = {
 };
 
 // 难度调高：干活/项目权重降低，摸鱼/救火权重提高，新增咖啡
-const WEIGHTS = { work:12, project:5, report:7, network:7, slack:12, fire:6, skip:5, coffee:3, tempwork:14, empty:15 };
+const WEIGHTS = { work:10, project:6, report:12, network:10, slack:10, fire:6, skip:4, coffee:4, tempwork:10, empty:15 };
 // clock和hr是常驻，单独放置
 
 // ============ 状态 ============
@@ -1063,8 +1063,8 @@ function populate() {
       r-=w; 
       if(r<=0){
         // 翘班最多1个，摸鱼最多2个
-        if (t === 'skip' && skipCount >= 1) continue;
-        if (t === 'slack' && slackCount >= 2) continue;
+        if (t === 'skip' && skipCount >= 2) continue;
+        if (t === 'slack' && slackCount >= 3) continue;
         G.board[y][x]=t;
         G.cellAges[y][x]=0;
         if (t === 'skip') skipCount++;
@@ -1277,8 +1277,14 @@ function move(dx,dy) {
     if (hit) { hitAnim(hx,hy); collide(hit,hx,hy); }
     else addLog('滑到了墙边，什么也没发生。','lg-info');
 
-    G.energy = Math.max(0, G.energy-1);
+    G.energy = Math.max(0, G.energy-0.5);
     G.attend--; G.perf--;
+    // 每回合自动转化10%业绩为升职气
+    if (G.work > 0) {
+      const autoConvert = Math.ceil(G.work * 0.1);
+      G.promo += autoConvert;
+      G.work -= autoConvert;
+    }
 
     // 上级相邻检查
     const supAdj = Math.abs(G.px-superior.x) + Math.abs(G.py-superior.y) === 1;
@@ -1352,17 +1358,19 @@ function collide(type,x,y) {
   const e = eff();
   switch(type) {
     case 'work': {
-      const g = Math.round(3*e);
-      G.work += g; G.energy = Math.max(0,G.energy-10);
-      fx(x,y,`+${g}业绩`,'#c87a3a');
-      addLog(`💼 干活：+${g}业绩，体力-10`,'lg-good');
+      const g = Math.round(5*e);
+      const p = Math.round(g * 0.3);
+      G.work += g; G.promo += p; G.energy = Math.max(0,G.energy-8);
+      fx(x,y,`+${g}业绩 +${p}升职气`,'#c87a3a');
+      addLog(`💼 干活：+${g}业绩，+${p}升职气，体力-8`,'lg-good');
       break;
     }
     case 'project': {
-      const g = Math.round(10*e);
-      G.work += g; G.energy = Math.max(0,G.energy-20);
-      fx(x,y,`+${g}业绩`,'#c87a3a');
-      addLog(`📋 做项目：+${g}业绩，体力-20`,'lg-good');
+      const g = Math.round(15*e);
+      const p = Math.round(g * 0.4);
+      G.work += g; G.promo += p; G.energy = Math.max(0,G.energy-15);
+      fx(x,y,`+${g}业绩 +${p}升职气`,'#c87a3a');
+      addLog(`📋 做项目：+${g}业绩，+${p}升职气，体力-15`,'lg-good');
       break;
     }
     case 'report': {
@@ -1377,7 +1385,7 @@ function collide(type,x,y) {
       break;
     }
     case 'network': {
-      const g = Math.round(5*e);
+      const g = Math.round(8*e);
       G.promo += g; G.energy = Math.max(0,G.energy-5);
       fx(x,y,`+${g}升职气`,'#334754');
       addLog(`🤝 搞人脉：+${g}升职气，体力-5`,'lg-good');
@@ -1391,10 +1399,10 @@ function collide(type,x,y) {
       break;
     }
     case 'slack': {
-      G.energy = Math.min(100,G.energy+20);
+      G.energy = Math.min(100,G.energy+30);
       G.slackCount++;
-      fx(x,y,'+20体力','#7c7d6a');
-      addLog(`🐟 摸鱼划水：体力+20，真舒服~（摸鱼记录+1）`,'lg-info');
+      fx(x,y,'+30体力','#7c7d6a');
+      addLog(`🐟 摸鱼划水：体力+30，真舒服~（摸鱼记录+1）`,'lg-info');
       break;
     }
     case 'fire': {
@@ -1405,10 +1413,11 @@ function collide(type,x,y) {
         setTimeout(()=>gameOver('dead'), 600);
         return;
       }
-      const g = Math.round(20*e);
-      G.work += g; G.energy = Math.max(0,G.energy-40);
-      fx(x,y,`+${g}业绩`,'#ac462c');
-      addLog(`🔥 紧急救火：+${g}业绩，体力-40！累死了...`,'lg-warn');
+      const g = Math.round(25*e);
+      const p = Math.round(g * 0.5);
+      G.work += g; G.promo += p; G.energy = Math.max(0,G.energy-30);
+      fx(x,y,`+${g}业绩 +${p}升职气`,'#ac462c');
+      addLog(`🔥 紧急救火：+${g}业绩，+${p}升职气，体力-30！累死了...`,'lg-warn');
       break;
     }
     case 'hr': { hrEvent(x,y); break; }
@@ -1434,16 +1443,17 @@ function collide(type,x,y) {
       break;
     }
     case 'tempwork': {
-      const g = Math.round(6*e);
-      G.work += g; G.energy = Math.max(0,G.energy-8);
-      fx(x,y,`+${g}业绩`,'#8b6914');
-      addLog(`📋 临时工作：+${g}业绩，体力-8（3回合不处理会变成救火！）`,'lg-warn');
+      const g = Math.round(8*e);
+      const p = Math.round(g * 0.3);
+      G.work += g; G.promo += p; G.energy = Math.max(0,G.energy-6);
+      fx(x,y,`+${g}业绩 +${p}升职气`,'#8b6914');
+      addLog(`📋 临时工作：+${g}业绩，+${p}升职气，体力-6（3回合不处理会变成救火！）`,'lg-warn');
       break;
     }
     case 'coffee': {
-      G.energy = Math.min(100,G.energy+15);
-      fx(x,y,'+15体力','#8b5a2b');
-      addLog('☕ 喝了杯咖啡，体力+15，精神多了！','lg-good');
+      G.energy = Math.min(100,G.energy+20);
+      fx(x,y,'+20体力','#8b5a2b');
+      addLog('☕ 喝了杯咖啡，体力+20，精神多了！','lg-good');
       // 如果总经理在相邻格子，给领导买咖啡+升职气
       if (G.bossType === 'gm') {
         const gmAdj = Math.abs(G.px-G.gm.x) + Math.abs(G.py-G.gm.y) === 1;
@@ -1556,14 +1566,13 @@ function refill() {
   
   // 统计当前翘班和摸鱼数量
   let currentSkip = 0, currentSlack = 0;
-  const size = getBoardSize();
   for (let cy=0;cy<size;cy++) for (let cx=0;cx<size;cx++) {
     if (G.board[cy][cx] === 'skip') currentSkip++;
     if (G.board[cy][cx] === 'slack') currentSlack++;
   }
   // 翘班最多1个，摸鱼最多2个
-  if (currentSkip >= 1) weights.skip = 0;
-  if (currentSlack >= 2) weights.slack = 0;
+  if (currentSkip >= 2) weights.skip = 0;
+  if (currentSlack >= 3) weights.slack = 0;
   
   for (let i = 0; i < refillCount && empty.length > 0; i++) {
     const idx = Math.floor(Math.random() * empty.length);
@@ -1892,10 +1901,11 @@ function gmCollide(type,x,y) {
     case 'hr': addLog(`☕ 陈总和HR谈了谈组织架构调整...`,'lg-info'); break;
     case 'skip': addLog(`☕ 陈总提前走了（高管的事能叫翘班吗）`,'lg-info'); break;
     case 'tempwork': {
-      const g = Math.round(6*e);
-      G.work += g; G.energy = Math.max(0,G.energy-8);
-      fx(x,y,`+${g}业绩`,'#8b6914');
-      addLog(`📋 临时工作：+${g}业绩，体力-8（3回合不处理会变成救火！）`,'lg-warn');
+      const g = Math.round(8*e);
+      const p = Math.round(g * 0.3);
+      G.work += g; G.promo += p; G.energy = Math.max(0,G.energy-6);
+      fx(x,y,`+${g}业绩 +${p}升职气`,'#8b6914');
+      addLog(`📋 临时工作：+${g}业绩，+${p}升职气，体力-6（3回合不处理会变成救火！）`,'lg-warn');
       break;
     }
     case 'coffee': {
