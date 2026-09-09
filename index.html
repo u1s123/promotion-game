@@ -977,6 +977,7 @@ function expandBoard() {
 // 更新格子年龄：临时工作3回合变救火，高价值格子3回合消失
 function updateCellAges() {
   const size = getBoardSize();
+  let cellsRemoved = 0;
   for (let y=0;y<size;y++) for (let x=0;x<size;x++) {
     const t = G.board[y][x];
     if (t === 'empty' || CELLS[t].perm) continue;
@@ -994,9 +995,16 @@ function updateCellAges() {
       } else if (t === 'promotion' || t === 'project') {
         G.board[y][x] = 'empty';
         G.cellAges[y][x] = 0;
+        cellsRemoved++;
         if (t === 'promotion') addLog('⏰ 晋升机会过期了！（3回合未抓住自动消失）','lg-bad');
         else addLog('📋 项目黄了！（3回合未接自动消失）','lg-warn');
       }
+    }
+  }
+  // 格子消失后补充新格子
+  if (cellsRemoved > 0) {
+    for (let i = 0; i < cellsRemoved; i++) {
+      refill();
     }
   }
   renderBoard();
@@ -1278,6 +1286,20 @@ function move(dx,dy) {
     updateUI();
     G.moving=false;
     checkOver();
+    // 检查空格子数量，确保有足够的格子
+    const size = getBoardSize();
+    let emptyCount = 0;
+    for (let cy=0;cy<size;cy++) for (let cx=0;cx<size;cx++) {
+      if (G.board[cy][cx] === 'empty') emptyCount++;
+    }
+    // 如果空格子超过一半，补充一些格子
+    const minCells = Math.floor(size * size * 0.4);
+    if (emptyCount > minCells) {
+      const refillCount = Math.min(emptyCount - minCells, 3);
+      for (let i = 0; i < refillCount; i++) {
+        refill();
+      }
+    }
     // 自动存档
     if (!G.over) saveGame();
   }, 500);
