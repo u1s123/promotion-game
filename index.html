@@ -838,11 +838,11 @@ const BOSS_UPGRADE_LEVEL = 2; // 玩家升到多少级时换上级（经理级�
 
 const LEVELS = [
   { name:'员工', need:0, desc:'刚来的', eval:'新鲜血液' },
-  { name:'主管', need:80, desc:'刚上任', eval:'潜力新星' },
-  { name:'经理', need:200, desc:'中层骨干', eval:'中流砥柱' },
-  { name:'总监', need:400, desc:'高层管理', eval:'运筹帷幄' },
-  { name:'VP', need:750, desc:'副总裁', eval:'一人之下' },
-  { name:'CEO', need:1200, desc:'首席执行官', eval:'职场王者' }
+  { name:'主管', need:200, desc:'刚上任', eval:'潜力新星' },
+  { name:'经理', need:500, desc:'中层骨干', eval:'中流砥柱' },
+  { name:'总监', need:1000, desc:'高层管理', eval:'运筹帷幄' },
+  { name:'VP', need:2000, desc:'副总裁', eval:'一人之下' },
+  { name:'CEO', need:5000, desc:'首席执行官', eval:'职场王者' }
 ];
 
 const CELLS = {
@@ -1077,14 +1077,14 @@ function showCellInfo(x,y) {
   if (t === 'empty') return;
   const info = CELLS[t];
   const descs = {
-    work:'干活：+5业绩，-10体力。老老实实搬砖。',
-    project:'项目：+15业绩，-20体力。大项目锻炼人。',
+    work:'干活：+3业绩，-15体力。老老实实搬砖。',
+    project:'项目：+8业绩，-30体力。大项目锻炼人。',
     report:'汇报：业绩全部转化为升职气。会干的不如会汇报的。',
-    network:'人脉：+8升职气，-5体力。多个朋友多条路。',
+    network:'人脉：+4升职气，-8体力。多个朋友多条路。',
     clock:'打卡机（常驻）：+25体力，重置考勤倒计时。不打卡算旷工。',
     hr:'HR（常驻）：随机事件。HR找你总没好事...吧？',
     slack:'摸鱼：+35体力，摸鱼记录+1。摸鱼一时爽，一直摸鱼一直爽。',
-    fire:'救火：+30业绩，-40体力。弯腰状态再救火会过劳猝死！',
+    fire:'救火：+15业绩，-60体力。弯腰状态再救火会过劳猝死！',
     skip:'翘班：+50体力，但下一次晋升机会作废！翘班一时爽，晋升火葬场。',
     promotion:'晋升门：走上去尝试晋升，有成功率，可能失败。'
   };
@@ -2820,11 +2820,11 @@ const BOSS_UPGRADE_LEVEL = 2; // 玩家升到多少级时换上级（经理级�
 
 const LEVELS = [
   { name:'员工', need:0, desc:'刚来的', eval:'新鲜血液' },
-  { name:'主管', need:80, desc:'刚上任', eval:'潜力新星' },
-  { name:'经理', need:200, desc:'中层骨干', eval:'中流砥柱' },
-  { name:'总监', need:400, desc:'高层管理', eval:'运筹帷幄' },
-  { name:'VP', need:750, desc:'副总裁', eval:'一人之下' },
-  { name:'CEO', need:1200, desc:'首席执行官', eval:'职场王者' }
+  { name:'主管', need:200, desc:'刚上任', eval:'潜力新星' },
+  { name:'经理', need:500, desc:'中层骨干', eval:'中流砥柱' },
+  { name:'总监', need:1000, desc:'高层管理', eval:'运筹帷幄' },
+  { name:'VP', need:2000, desc:'副总裁', eval:'一人之下' },
+  { name:'CEO', need:5000, desc:'首席执行官', eval:'职场王者' }
 ];
 
 const CELLS = {
@@ -3054,14 +3054,14 @@ function showCellInfo(x,y) {
   if (t === 'empty') return;
   const info = CELLS[t];
   const descs = {
-    work:'干活：+5业绩，-10体力。老老实实搬砖。',
-    project:'项目：+15业绩，-20体力。大项目锻炼人。',
+    work:'干活：+3业绩，-15体力。老老实实搬砖。',
+    project:'项目：+8业绩，-30体力。大项目锻炼人。',
     report:'汇报：业绩全部转化为升职气。会干的不如会汇报的。',
-    network:'人脉：+8升职气，-5体力。多个朋友多条路。',
+    network:'人脉：+4升职气，-8体力。多个朋友多条路。',
     clock:'打卡机（常驻）：+25体力，重置考勤倒计时。不打卡算旷工。',
     hr:'HR（常驻）：随机事件。HR找你总没好事...吧？',
     slack:'摸鱼：+35体力，摸鱼记录+1。摸鱼一时爽，一直摸鱼一直爽。',
-    fire:'救火：+30业绩，-40体力。弯腰状态再救火会过劳猝死！',
+    fire:'救火：+15业绩，-60体力。弯腰状态再救火会过劳猝死！',
     skip:'翘班：+50体力，但下一次晋升机会作废！翘班一时爽，晋升火葬场。',
     promotion:'晋升门：走上去尝试晋升，有成功率，可能失败。'
   };
@@ -4797,11 +4797,11 @@ const BOSS_UPGRADE_LEVEL = 2; // 玩家升到多少级时换上级（经理级�
 
 const LEVELS = [
   { name:'员工', need:0, desc:'刚来的', eval:'新鲜血液' },
-  { name:'主管', need:80, desc:'刚上任', eval:'潜力新星' },
-  { name:'经理', need:200, desc:'中层骨干', eval:'中流砥柱' },
-  { name:'总监', need:400, desc:'高层管理', eval:'运筹帷幄' },
-  { name:'VP', need:750, desc:'副总裁', eval:'一人之下' },
-  { name:'CEO', need:1200, desc:'首席执行官', eval:'职场王者' }
+  { name:'主管', need:200, desc:'刚上任', eval:'潜力新星' },
+  { name:'经理', need:500, desc:'中层骨干', eval:'中流砥柱' },
+  { name:'总监', need:1000, desc:'高层管理', eval:'运筹帷幄' },
+  { name:'VP', need:2000, desc:'副总裁', eval:'一人之下' },
+  { name:'CEO', need:5000, desc:'首席执行官', eval:'职场王者' }
 ];
 
 const CELLS = {
@@ -5031,14 +5031,14 @@ function showCellInfo(x,y) {
   if (t === 'empty') return;
   const info = CELLS[t];
   const descs = {
-    work:'干活：+5业绩，-10体力。老老实实搬砖。',
-    project:'项目：+15业绩，-20体力。大项目锻炼人。',
+    work:'干活：+3业绩，-15体力。老老实实搬砖。',
+    project:'项目：+8业绩，-30体力。大项目锻炼人。',
     report:'汇报：业绩全部转化为升职气。会干的不如会汇报的。',
-    network:'人脉：+8升职气，-5体力。多个朋友多条路。',
+    network:'人脉：+4升职气，-8体力。多个朋友多条路。',
     clock:'打卡机（常驻）：+25体力，重置考勤倒计时。不打卡算旷工。',
     hr:'HR（常驻）：随机事件。HR找你总没好事...吧？',
     slack:'摸鱼：+35体力，摸鱼记录+1。摸鱼一时爽，一直摸鱼一直爽。',
-    fire:'救火：+30业绩，-40体力。弯腰状态再救火会过劳猝死！',
+    fire:'救火：+15业绩，-60体力。弯腰状态再救火会过劳猝死！',
     skip:'翘班：+50体力，但下一次晋升机会作废！翘班一时爽，晋升火葬场。',
     promotion:'晋升门：走上去尝试晋升，有成功率，可能失败。'
   };
@@ -6769,11 +6769,11 @@ const BOSS_UPGRADE_LEVEL = 2; // 玩家升到多少级时换上级（经理级�
 
 const LEVELS = [
   { name:'员工', need:0, desc:'刚来的', eval:'新鲜血液' },
-  { name:'主管', need:80, desc:'刚上任', eval:'潜力新星' },
-  { name:'经理', need:200, desc:'中层骨干', eval:'中流砥柱' },
-  { name:'总监', need:400, desc:'高层管理', eval:'运筹帷幄' },
-  { name:'VP', need:750, desc:'副总裁', eval:'一人之下' },
-  { name:'CEO', need:1200, desc:'首席执行官', eval:'职场王者' }
+  { name:'主管', need:200, desc:'刚上任', eval:'潜力新星' },
+  { name:'经理', need:500, desc:'中层骨干', eval:'中流砥柱' },
+  { name:'总监', need:1000, desc:'高层管理', eval:'运筹帷幄' },
+  { name:'VP', need:2000, desc:'副总裁', eval:'一人之下' },
+  { name:'CEO', need:5000, desc:'首席执行官', eval:'职场王者' }
 ];
 
 const CELLS = {
@@ -6936,14 +6936,14 @@ function showCellInfo(x,y) {
   if (t === 'empty') return;
   const info = CELLS[t];
   const descs = {
-    work:'干活：+5业绩，-10体力。老老实实搬砖。',
-    project:'项目：+15业绩，-20体力。大项目锻炼人。',
+    work:'干活：+3业绩，-15体力。老老实实搬砖。',
+    project:'项目：+8业绩，-30体力。大项目锻炼人。',
     report:'汇报：业绩全部转化为升职气。会干的不如会汇报的。',
-    network:'人脉：+8升职气，-5体力。多个朋友多条路。',
+    network:'人脉：+4升职气，-8体力。多个朋友多条路。',
     clock:'打卡机（常驻）：+25体力，重置考勤倒计时。不打卡算旷工。',
     hr:'HR（常驻）：随机事件。HR找你总没好事...吧？',
     slack:'摸鱼：+35体力，摸鱼记录+1。摸鱼一时爽，一直摸鱼一直爽。',
-    fire:'救火：+30业绩，-40体力。弯腰状态再救火会过劳猝死！',
+    fire:'救火：+15业绩，-60体力。弯腰状态再救火会过劳猝死！',
     skip:'翘班：+50体力，但下一次晋升机会作废！翘班一时爽，晋升火葬场。',
     promotion:'晋升门：走上去尝试晋升，有成功率，可能失败。'
   };
@@ -8618,11 +8618,11 @@ const BOSS_UPGRADE_LEVEL = 2; // 玩家升到多少级时换上级（经理级�
 
 const LEVELS = [
   { name:'员工', need:0, desc:'刚来的', eval:'新鲜血液' },
-  { name:'主管', need:80, desc:'刚上任', eval:'潜力新星' },
-  { name:'经理', need:200, desc:'中层骨干', eval:'中流砥柱' },
-  { name:'总监', need:400, desc:'高层管理', eval:'运筹帷幄' },
-  { name:'VP', need:750, desc:'副总裁', eval:'一人之下' },
-  { name:'CEO', need:1200, desc:'首席执行官', eval:'职场王者' }
+  { name:'主管', need:200, desc:'刚上任', eval:'潜力新星' },
+  { name:'经理', need:500, desc:'中层骨干', eval:'中流砥柱' },
+  { name:'总监', need:1000, desc:'高层管理', eval:'运筹帷幄' },
+  { name:'VP', need:2000, desc:'副总裁', eval:'一人之下' },
+  { name:'CEO', need:5000, desc:'首席执行官', eval:'职场王者' }
 ];
 
 const CELLS = {
@@ -8734,14 +8734,14 @@ function showCellInfo(x,y) {
   if (t === 'empty') return;
   const info = CELLS[t];
   const descs = {
-    work:'干活：+5业绩，-10体力。老老实实搬砖。',
-    project:'项目：+15业绩，-20体力。大项目锻炼人。',
+    work:'干活：+3业绩，-15体力。老老实实搬砖。',
+    project:'项目：+8业绩，-30体力。大项目锻炼人。',
     report:'汇报：业绩全部转化为升职气。会干的不如会汇报的。',
-    network:'人脉：+8升职气，-5体力。多个朋友多条路。',
+    network:'人脉：+4升职气，-8体力。多个朋友多条路。',
     clock:'打卡机（常驻）：+25体力，重置考勤倒计时。不打卡算旷工。',
     hr:'HR（常驻）：随机事件。HR找你总没好事...吧？',
     slack:'摸鱼：+35体力，摸鱼记录+1。摸鱼一时爽，一直摸鱼一直爽。',
-    fire:'救火：+30业绩，-40体力。弯腰状态再救火会过劳猝死！',
+    fire:'救火：+15业绩，-60体力。弯腰状态再救火会过劳猝死！',
     skip:'翘班：+50体力，但下一次晋升机会作废！翘班一时爽，晋升火葬场。',
     promotion:'晋升门：走上去尝试晋升，有成功率，可能失败。'
   };
