@@ -223,7 +223,7 @@
   /* 棋盘 */
   .board-wrap { padding:12px; margin-bottom:10px; touch-action:none; position:relative; background: var(--bg-paper-dark); }
   .board {
-    display:grid; grid-template-columns:repeat(6,1fr); gap:4px;
+    display:grid; grid-template-columns:repeat(6,1fr); grid-auto-rows:1fr; gap:4px;
     aspect-ratio:1; position:relative;
     background: var(--bg-paper-dark);
     padding: 4px;
@@ -235,6 +235,7 @@
     transition:transform 0.15s; user-select:none; overflow:hidden;
     border:1px solid var(--card-border);
     background: var(--card-bg);
+    aspect-ratio:1; min-height:0;
   }
   .cell::before {
     content:''; position:absolute; top:0; left:0; right:0; height:40%;
@@ -1019,11 +1020,11 @@ function placePerm() {
     {x:Math.floor(size/2),y:0},{x:Math.floor(size/2),y:size-1}
   ];
   const shuffled = positions.sort(()=>Math.random()-0.5);
-  // 打卡机跟HR只能有一个，随机选择
+  // HR和打卡机整局游戏只能有一个，随机选择，位置固定
   const permType = Math.random() < 0.5 ? 'clock' : 'hr';
   G.board[shuffled[0].y][shuffled[0].x] = permType;
   G.cellAges[shuffled[0].y][shuffled[0].x] = 0;
-  G.permType = permType; // 记录当前常驻格子类型
+  G.permType = permType;
 }
 
 function populate() {
@@ -1039,12 +1040,38 @@ function populate() {
     initWeights.coffee = 0;
     initWeights.slack = 5;
   }
+  // 翘班和摸鱼数量限制
+  initWeights.skip = 2;  // 翘班权重降低
   const tw = Object.values(initWeights).reduce((a,b)=>a+b,0);
+  
+  // 根据回合数控制初始填充率（开局少，后面多）
+  const turn = G.turn;
+  let fillRate = 0.35;  // 默认35%
+  if (turn < 10) fillRate = 0.35;       // 开局：35%
+  else if (turn < 25) fillRate = 0.55;  // 中期：55%
+  else if (turn < 40) fillRate = 0.75;  // 后期：75%
+  else fillRate = 0.90;                   // 大后期：90%
+  
+  let skipCount = 0, slackCount = 0;
   for (let y=0;y<size;y++) for (let x=0;x<size;x++) {
     if (G.board[y][x] !== 'empty') continue;
     if ((x===G.px&&y===G.py) || (x===G.col.x&&y===G.col.y) || (x===sup.x&&y===sup.y)) continue;
+    // 按填充率决定是否填充
+    if (Math.random() > fillRate) continue;
     let r = Math.random()*tw;
-    for (const [t,w] of Object.entries(initWeights)) { r-=w; if(r<=0){G.board[y][x]=t;G.cellAges[y][x]=0;break;} }
+    for (const [t,w] of Object.entries(initWeights)) { 
+      r-=w; 
+      if(r<=0){
+        // 翘班最多1个，摸鱼最多2个
+        if (t === 'skip' && skipCount >= 1) continue;
+        if (t === 'slack' && slackCount >= 2) continue;
+        G.board[y][x]=t;
+        G.cellAges[y][x]=0;
+        if (t === 'skip') skipCount++;
+        if (t === 'slack') slackCount++;
+        break;
+      } 
+    }
   }
 }
 
@@ -1315,7 +1342,7 @@ function move(dx,dy) {
     }
     // 自动存档
     if (!G.over) saveGame();
-  }, 500);
+  }, 300);
 }
 
 // ============ 碰撞 ============
@@ -1325,49 +1352,49 @@ function collide(type,x,y) {
   const e = eff();
   switch(type) {
     case 'work': {
-      const g = Math.round(4*e);
-      G.work += g; G.energy = Math.max(0,G.energy-12);
+      const g = Math.round(3*e);
+      G.work += g; G.energy = Math.max(0,G.energy-10);
       fx(x,y,`+${g}业绩`,'#c87a3a');
-      addLog(`💼 干活：+${g}业绩，体力-12`,'lg-good');
+      addLog(`💼 干活：+${g}业绩，体力-10`,'lg-good');
       break;
     }
     case 'project': {
-      const g = Math.round(12*e);
-      G.work += g; G.energy = Math.max(0,G.energy-25);
+      const g = Math.round(10*e);
+      G.work += g; G.energy = Math.max(0,G.energy-20);
       fx(x,y,`+${g}业绩`,'#c87a3a');
-      addLog(`📋 做项目：+${g}业绩，体力-25`,'lg-good');
+      addLog(`📋 做项目：+${g}业绩，体力-20`,'lg-good');
       break;
     }
     case 'report': {
       if (G.work>0) {
-        const g = G.work;
+        const g = Math.round(G.work * 1.2);
         G.promo += g;
         fx(x,y,`+${g}升职气`,'#334754');
-        addLog(`📊 汇报工作：${g}业绩 → ${g}升职气！`,'lg-good');
+        addLog(`📊 汇报工作：${G.work}业绩 → ${g}升职气！（汇报加成+20%）`,'lg-good');
         G.work = 0;
       } else addLog('📊 汇报：但你没有业绩可汇报...','lg-warn');
       G.energy = Math.max(0,G.energy-5);
       break;
     }
     case 'network': {
-      const g = Math.round(6*e);
+      const g = Math.round(5*e);
       G.promo += g; G.energy = Math.max(0,G.energy-5);
       fx(x,y,`+${g}升职气`,'#334754');
       addLog(`🤝 搞人脉：+${g}升职气，体力-5`,'lg-good');
       break;
     }
     case 'clock': {
-      G.energy = Math.min(100,G.energy+20);
+      G.energy = Math.min(100,G.energy+25);
       G.attend = ATTEND_MAX;
-      fx(x,y,'+20体力','#607d4d');
-      addLog(`🕐 打卡上班：体力+20，考勤倒计时重置！`,'lg-good');
+      fx(x,y,'+25体力','#607d4d');
+      addLog(`🕐 打卡上班：体力+25，考勤倒计时重置！`,'lg-good');
       break;
     }
     case 'slack': {
-      G.energy = Math.min(100,G.energy+25);
+      G.energy = Math.min(100,G.energy+20);
       G.slackCount++;
-      fx(x,y,'+25体力','#7c7d6a');
-      addLog(`🐟 摸鱼划水：体力+25，真舒服~（摸鱼记录+1）`,'lg-info');
+      fx(x,y,'+20体力','#7c7d6a');
+      addLog(`🐟 摸鱼划水：体力+20，真舒服~（摸鱼记录+1）`,'lg-info');
       break;
     }
     case 'fire': {
@@ -1378,10 +1405,10 @@ function collide(type,x,y) {
         setTimeout(()=>gameOver('dead'), 600);
         return;
       }
-      const g = Math.round(25*e);
-      G.work += g; G.energy = Math.max(0,G.energy-50);
+      const g = Math.round(20*e);
+      G.work += g; G.energy = Math.max(0,G.energy-40);
       fx(x,y,`+${g}业绩`,'#ac462c');
-      addLog(`🔥 紧急救火：+${g}业绩，体力-50！累死了...`,'lg-warn');
+      addLog(`🔥 紧急救火：+${g}业绩，体力-40！累死了...`,'lg-warn');
       break;
     }
     case 'hr': { hrEvent(x,y); break; }
@@ -1391,13 +1418,26 @@ function collide(type,x,y) {
       G.skipPenalty = true;
       fx(x,y,'+40体力','#607d4d');
       addLog('🏖️ 翘班了！体力+40，但下一次晋升机会作废！','lg-warn');
+      // 翘班有概率导致直接被开除（概率随翘班次数增加）
+      let fireChance = 0;
+      if (G.skipCount === 1) fireChance = 10;      // 第一次：10%
+      else if (G.skipCount === 2) fireChance = 20; // 第二次：20%
+      else if (G.skipCount === 3) fireChance = 35; // 第三次：35%
+      else fireChance = 50;                          // 第四次及以上：50%
+      if (Math.random() * 100 < fireChance) {
+        addLog(`🚨 翘班被发现了！公司决定开除你！（第${G.skipCount}次翘班，开除概率${fireChance}%）`,'lg-bad');
+        setTimeout(()=>gameOver('fired'), 800);
+        return;
+      } else {
+        addLog(`😅 这次翘班没被发现，好险！（开除概率${fireChance}%）`,'lg-info');
+      }
       break;
     }
     case 'tempwork': {
-      const g = Math.round(8*e);
-      G.work += g; G.energy = Math.max(0,G.energy-10);
+      const g = Math.round(6*e);
+      G.work += g; G.energy = Math.max(0,G.energy-8);
       fx(x,y,`+${g}业绩`,'#8b6914');
-      addLog(`📋 临时工作：+${g}业绩，体力-10（3回合不处理会变成救火！）`,'lg-warn');
+      addLog(`📋 临时工作：+${g}业绩，体力-8（3回合不处理会变成救火！）`,'lg-warn');
       break;
     }
     case 'coffee': {
@@ -1441,6 +1481,12 @@ function hrEvent(x,y) {
     { msg:'👔 你考勤不错：+10升职气', fn:()=>{G.promo+=10; fx(x,y,'+10升职气','#334754');}, t:'lg-good' },
     { msg:'👔 HR说要优化结构...你被约谈了，升职气-15', fn:()=>{G.promo=Math.max(0,G.promo-15); fx(x,y,'-15升职气','#ac462c');}, t:'lg-bad' },
     { msg:'👔 年会抽奖你中了！+25体力', fn:()=>{G.energy=Math.min(100,G.energy+25); fx(x,y,'+25体力','#607d4d');}, t:'lg-good' },
+    { msg:'👔 HR组织团建：大家都很开心！+15体力，+5升职气', fn:()=>{G.energy=Math.min(100,G.energy+15); G.promo+=5; fx(x,y,'+15体力','#607d4d');}, t:'lg-good' },
+    { msg:'👔 HR说你最近表现突出，给你申请了奖金！+25升职气', fn:()=>{G.promo+=25; fx(x,y,'+25升职气','#334754');}, t:'lg-gold' },
+    { msg:'👔 HR提醒你：考勤要注意啊...考勤-1', fn:()=>{G.attend=Math.max(0,G.attend-1); fx(x,y,'考勤-1','#ac462c');}, t:'lg-warn' },
+    { msg:'👔 HR找你谈话：听说你在找下家？升职气-20', fn:()=>{G.promo=Math.max(0,G.promo-20); fx(x,y,'-20升职气','#ac462c');}, t:'lg-bad' },
+    { msg:'👔 公司发了购物卡！+10体力，心情大好', fn:()=>{G.energy=Math.min(100,G.energy+10); fx(x,y,'+10体力','#607d4d');}, t:'lg-good' },
+    { msg:'👔 HR说你工位太乱了...扣50块钱，升职气-5', fn:()=>{G.promo=Math.max(0,G.promo-5); fx(x,y,'-5升职气','#ac462c');}, t:'lg-warn' },
   ];
   const ev = events[Math.floor(Math.random()*events.length)];
   ev.fn();
@@ -1464,12 +1510,10 @@ function refill() {
     // 开局：基础格子多，事件少
     weights.work = 20;
     weights.slack = 18;
-    weights.clock = 10;
     weights.project = 3;
     weights.report = 3;
     weights.network = 2;
     weights.fire = 1;
-    weights.hr = 1;
     weights.tempwork = 2;
     weights.coffee = 1;
     weights.skip = 1;
@@ -1477,12 +1521,10 @@ function refill() {
     // 中期：事件开始增多
     weights.work = 15;
     weights.slack = 12;
-    weights.clock = 8;
     weights.project = 8;
     weights.report = 8;
     weights.network = 6;
     weights.fire = 5;
-    weights.hr = 4;
     weights.tempwork = 8;
     weights.coffee = 3;
     weights.skip = 2;
@@ -1490,12 +1532,10 @@ function refill() {
     // 后期：事件很多，高压状态
     weights.work = 10;
     weights.slack = 8;
-    weights.clock = 6;
     weights.project = 10;
     weights.report = 10;
     weights.network = 8;
     weights.fire = 12;
-    weights.hr = 8;
     weights.tempwork = 15;
     weights.coffee = 5;
     weights.skip = 3;
@@ -1514,6 +1554,17 @@ function refill() {
   // 每次刷新1-3个格子（后期刷新更多）
   const refillCount = turn < 10 ? 1 : (turn < 25 ? Math.random() < 0.5 ? 1 : 2 : Math.random() < 0.3 ? 2 : 3);
   
+  // 统计当前翘班和摸鱼数量
+  let currentSkip = 0, currentSlack = 0;
+  const size = getBoardSize();
+  for (let cy=0;cy<size;cy++) for (let cx=0;cx<size;cx++) {
+    if (G.board[cy][cx] === 'skip') currentSkip++;
+    if (G.board[cy][cx] === 'slack') currentSlack++;
+  }
+  // 翘班最多1个，摸鱼最多2个
+  if (currentSkip >= 1) weights.skip = 0;
+  if (currentSlack >= 2) weights.slack = 0;
+  
   for (let i = 0; i < refillCount && empty.length > 0; i++) {
     const idx = Math.floor(Math.random() * empty.length);
     const c = empty.splice(idx, 1)[0];
@@ -1522,6 +1573,25 @@ function refill() {
     for (const [t,w] of Object.entries(weights)) { r-=w; if(r<=0){G.board[c.y][c.x]=t;G.cellAges[c.y][c.x]=0;break;} }
   }
   renderBoard();
+  
+  // 检查是否满格，满格游戏结束
+  let emptyAfter = 0;
+  for (let cy=0;cy<size;cy++) for (let cx=0;cx<size;cx++) {
+    if (G.board[cy][cx] === 'empty') emptyAfter++;
+  }
+  if (emptyAfter === 0 && !G.over) {
+    setTimeout(()=>gameOver('full'), 500);
+  }
+  // 格子刷新动画
+  setTimeout(()=>{
+    document.querySelectorAll('.cell').forEach(cell=>{
+      if (cell.dataset.refreshed === 'true') {
+        cell.classList.add('cell-refresh');
+        setTimeout(()=>cell.classList.remove('cell-refresh'), 300);
+        cell.dataset.refreshed = 'false';
+      }
+    });
+  }, 10);
 }
 
 // ============ 绩效考核 ============
@@ -1822,10 +1892,10 @@ function gmCollide(type,x,y) {
     case 'hr': addLog(`☕ 陈总和HR谈了谈组织架构调整...`,'lg-info'); break;
     case 'skip': addLog(`☕ 陈总提前走了（高管的事能叫翘班吗）`,'lg-info'); break;
     case 'tempwork': {
-      const g = Math.round(8*e);
-      G.work += g; G.energy = Math.max(0,G.energy-10);
+      const g = Math.round(6*e);
+      G.work += g; G.energy = Math.max(0,G.energy-8);
       fx(x,y,`+${g}业绩`,'#8b6914');
-      addLog(`📋 临时工作：+${g}业绩，体力-10（3回合不处理会变成救火！）`,'lg-warn');
+      addLog(`📋 临时工作：+${g}业绩，体力-8（3回合不处理会变成救火！）`,'lg-warn');
       break;
     }
     case 'coffee': {
@@ -1885,15 +1955,22 @@ function tryPromotion() {
   // 计算成功率 - 根据升职气超过门槛的程度
   const nextNeed = LEVELS[G.level+1].need;
   const overRatio = (G.promo - nextNeed) / nextNeed;
-  let rate = 20 + Math.min(40, overRatio * 100); // 基础20%，超过门槛越多成功率越高
-  if (G.lastPerf === 'S') rate += 15;
-  else if (G.lastPerf === 'A') rate += 10;
+  let rate = 15 + Math.min(35, overRatio * 80); // 基础15%，超过门槛越多成功率越高
+  // 绩效影响更大
+  if (G.lastPerf === 'S') rate += 25;
+  else if (G.lastPerf === 'A') rate += 15;
   else if (G.lastPerf === 'B') rate += 5;
-  else if (G.lastPerf === 'D') rate -= 10;
-  if (G.attend > 4) rate += 5;
+  else if (G.lastPerf === 'C') rate -= 5;
+  else if (G.lastPerf === 'D') rate -= 20;
+  // 考勤影响更大
+  if (G.attend >= ATTEND_MAX) rate += 10;
+  else if (G.attend > 4) rate += 5;
+  else if (G.attend <= 2) rate -= 10;
+  // 体力和摸鱼影响
   if (G.energy > 60) rate += 5;
-  if (G.slackCount > 5) rate -= 10;
-  rate = Math.max(5, Math.min(90, rate));
+  if (G.slackCount > 8) rate -= 15;
+  else if (G.slackCount > 5) rate -= 8;
+  rate = Math.max(3, Math.min(85, rate));
 
   const success = Math.random() * 100 < rate;
 
@@ -2008,6 +2085,20 @@ function gameOver(reason) {
       { title: '身体被掏空', quote: '你把青春献给了公司，公司把你的青春献给了垃圾桶。', desc: '你感觉身体被掏空了。早上起不来，晚上睡不着，上班没精神，下班没力气。老婆说你像个行尸走肉，你说：至少行尸走肉不用还房贷。老婆沉默了，因为你说得对。' },
       { title: '累出病了', quote: '你用健康换来了钱，然后用钱去买健康，发现不够。', desc: '你累出病了。住院花了三万，医保报销了两万，自己掏了一万。这一万是你加了五十个小时班赚来的。你躺在病床上算了一笔账：时薪200，住院费一小时500。越算越亏。' },
       { title: '撑不住了', quote: '成年人的崩溃，往往是从一句没事开始的。', desc: '你撑不住了。在一个普通的周二下午，你突然在工位上哭了起来。同事问你怎么了，你说没事，就是眼睛进沙子了。办公室里没有窗户，哪来的沙子？但大家都心照不宣，因为每个人都有过这样的时刻。' }
+    ],
+    fired: [
+      { title: '被开除了', quote: '公司不需要你了，但你需要公司。', desc: 'HR找你谈话，说公司最近在优化结构，你的岗位被取消了。你问能不能赔偿，HR说N+1，但是要签保密协议。你签了，拿着赔偿款走出公司大门，发现外面的太阳很刺眼。你在公司干了三年，最后换来一个纸箱和一句好聚好散。' },
+      { title: '卷铺盖走人', quote: '你以为你在为公司奋斗，其实你在为公司省钱。', desc: '翘班被发现了。领导在全员大会上不点名批评，说有些人态度有问题。你知道说的是你。下午HR就找你谈话了，说你不符合公司文化。你问什么是公司文化，HR说：就是加班不抱怨，干活不拿钱。你笑了笑，收拾东西走人。' },
+      { title: '优化掉了', quote: '你不是被开除的，你是被优化的。听上去好听一点。', desc: '公司最近在搞组织架构优化，你的部门被合并了，你的岗位没了。HR说这不是你的问题，是公司的战略调整。你问那为什么是我，HR说：因为你翘班被抓到了。你沉默了，因为确实是这样。最后拿了N+1，回家待业。' },
+      { title: '辞退通知', quote: '上班如上坟，现在坟被平了。', desc: '你收到了辞退通知，理由是严重违反公司规章制度。你看了看规章制度，第18条：无故旷工超过三次，公司有权解除劳动合同。你翘班了四次，刚好够格。你把通知拍了个照，发了个朋友圈：终于不用打卡了。然后屏蔽了所有同事。' },
+      { title: '扫地出门', quote: '你把青春献给了公司，公司把你献给了人才市场。', desc: '翘班被抓了现行。领导当着全部门的面说：有些人，拿着工资不干活，不如回家卖红薯。你知道说的是你。当天下午，你的工牌就失效了，电脑账号也被注销了。你抱着纸箱走出公司，保安还检查了你的纸箱，怕你偷公司的笔。' },
+      { title: '失业了', quote: '失业不可怕，可怕的是房贷还在。', desc: '你被开除了。原因是翘班次数太多，公司忍无可忍。你拿着离职证明去社保局办失业登记，工作人员问你为什么被开除，你说个人原因。其实你知道，就是因为翘班被抓了。回家的路上，你收到了房贷扣款短信，余额提醒你：该找下一份工作了。' },
+      { title: '职场滑铁卢', quote: '从哪里跌倒，就从哪里被开除。', desc: '你的职场生涯遭遇了滑铁卢。翘班被发现，领导大怒，直接让HR办了辞退手续。你收拾东西的时候，同事们都假装在忙，没有人敢跟你说话，怕被牵连。你在公司干了这么久，最后连一个送别的人都没有。走出公司大门，你突然觉得：这班，不上也罢。' }
+    ],
+    full: [
+      { title: '办公室爆满', quote: '人满为患，连个摸鱼的地方都没有了。', desc: '办公室里挤满了人，每个工位都有人，每个角落都在干活。你想找个地方喘口气，发现连厕所都有人在加班。HR说：公司发展太好了，工位不够用了，你要不要考虑居家办公？你看了看满屋子的人，突然觉得：这班，不上也罢。' },
+      { title: '无处可去', quote: '棋盘满了，你的职场路也走到头了。', desc: '整个办公室都被各种工作填满了，项目、救火、汇报、人脉，连个空格子都找不到。你站在原地，不知道该往哪里走，因为每一步都是坑。领导说：年轻人要多锻炼，哪里需要去哪里。你看了看满屋子的工作，突然觉得：还是躺平比较舒服。' },
+      { title: '工作淹没', quote: '你不是在工作，你是被工作淹没了。', desc: '工作像潮水一样涌来，把你彻底淹没了。临时工作变成了救火，救火变成了项目，项目变成了汇报，汇报变成了更多的工作。你想喘口气，发现连呼吸的时间都没有。最后一根稻草落下来的时候，你彻底崩溃了：这班，谁爱上谁上吧！' }
     ]
   };
 
@@ -2217,7 +2308,11 @@ document.addEventListener('keydown', e => {
   if (G.over) return;
   const m = { ArrowUp:[0,-1], ArrowDown:[0,1], ArrowLeft:[-1,0], ArrowRight:[1,0],
     w:[0,-1], W:[0,-1], s:[0,1], S:[0,1], a:[-1,0], A:[-1,0], d:[1,0], D:[1,0] };
-  if (m[e.key]) { e.preventDefault(); move(...m[e.key]); }
+  if (m[e.key]) { 
+    e.preventDefault(); 
+    // 支持连续按键：如果正在移动，忽略本次按键（防止过快）
+    if (!G.moving) move(...m[e.key]);
+  }
 });
 
 let tsx=0, tsy=0, touchMoved=false;
@@ -2233,6 +2328,7 @@ bc.addEventListener('touchstart', e=>{
 bc.addEventListener('touchmove', e=>{
   // 防止页面滚动
   e.preventDefault();
+  touchMoved = true;
   const dx=e.touches[0].clientX-tsx, dy=e.touches[0].clientY-tsy;
   if (Math.abs(dx)>10 || Math.abs(dy)>10) touchMoved=true;
 },{passive:false});
@@ -2241,10 +2337,11 @@ bc.addEventListener('touchend', e=>{
   bc.style.transform='scale(1)';
   if (G.over) return;
   const dx=e.changedTouches[0].clientX-tsx, dy=e.changedTouches[0].clientY-tsy;
-  // 手机上最小滑动距离设为15px，更灵敏
-  if (Math.abs(dx)<15&&Math.abs(dy)<15) return;
-  if (Math.abs(dx)>Math.abs(dy)) move(dx>0?1:-1,0);
-  else move(0,dy>0?1:-1);
+  // 最小滑动距离25px，防止误触
+  if (Math.abs(dx)<25&&Math.abs(dy)<25) return;
+  // 方向判定更严格，防止斜向滑动误判
+  if (Math.abs(dx) > Math.abs(dy) * 1.2) move(dx>0?1:-1,0);
+  else if (Math.abs(dy) > Math.abs(dx) * 1.2) move(0,dy>0?1:-1);
 },{passive:true});
 
 // 触摸取消时恢复
