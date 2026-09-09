@@ -241,7 +241,7 @@
     background:linear-gradient(to bottom, rgba(255,255,255,0.3), transparent);
     pointer-events:none;
   }
-  .cell .ci { width:70%; height:65%; display:flex; align-items:center; justify-content:center; margin-top:2px; }
+  .cell .ci { width:90%; height:80%; display:flex; align-items:center; justify-content:center; margin-top:0; }
   .cell .ci svg { width:100%; height:100%; }
   .cell .cl { font-size:8px; margin-top:1px; opacity:0.8; font-weight:600; color: var(--text-primary); }
   .cell.perm { border:2px solid var(--blue); box-shadow: inset 0 0 0 1px rgba(51,71,84,0.2); }
@@ -522,7 +522,7 @@
   }
 
   /* 图片素材样式 */
-  .cell .cell-img { width:82%; height:72%; display:flex; align-items:center; justify-content:center; margin-top:2px; }
+  .cell .cell-img { width:100%; height:88%; display:flex; align-items:center; justify-content:center; margin-top:0; }
   .cell .cell-img img { width:100%; height:100%; object-fit:contain; }
   .player-inner img { width:85%; height:85%; object-fit:contain; border-radius:50%; }
   .col-on-board-inner img { width:80%; height:80%; object-fit:contain; border-radius:50%; }
@@ -530,8 +530,8 @@
   .modal-img-wrap { width:120px; height:120px; margin:0 auto 14px; display:flex; align-items:center; justify-content:center; }
   .modal-img { width:100%; height:100%; object-fit:contain; animation:mPop 0.5s cubic-bezier(0.34,1.56,0.64,1); }
   @media (max-width: 480px) {
-    .cell .cell-img { width:80%; height:70%; }
-    .cell .ci { width:68%; height:63%; }
+    .cell .cell-img { width:100%; height:85%; }
+    .cell .ci { width:88%; height:78%; }
     .modal-img-wrap { width:100px; height:100px; }
   }
 
@@ -1867,24 +1867,52 @@ function checkOver() {
 
 function gameOver(reason) {
   G.over = true;
-  const gameOverImg = document.getElementById('gameOverModalImg');
+  const modal = document.getElementById('gameOverModal');
   const title = document.getElementById('gameOverTitle');
   const desc = document.getElementById('gameOverDesc');
 
-  if (reason === 'win') {
-    gameOverImg.src = IMG['16_弹窗_晋升成功'];
-    title.textContent = '恭喜通关！';
-    desc.textContent = `你成功晋升为CEO！\n\n最终成绩：\n升职气 ${G.promo}\n总回合 ${G.turn}\n摸鱼 ${G.slackCount} 次\n晋升成功 ${G.promoSuccess} 次\n\n同事罗欣最终：${LEVELS[G.col.level].name}，升职气 ${G.col.promo}\n上级最终：${G.bossType==='wang'?'王建国（王总）':'陈道明（陈总）'}，${LEVELS[G.bossType==='wang'?G.boss.level:G.gm.level].name}，升职气 ${G.bossType==='wang'?G.boss.promo:G.gm.promo}\n\n你是真正的职场王者！`;
-  } else if (reason === 'dead') {
-    gameOverImg.src = IMG['19_弹窗_游戏结束'];
-    title.textContent = '过劳猝死';
-    desc.textContent = `你在弯腰冒汗的状态下强行救火，过劳猝死了...\n\n最终成绩：\n职位：${LEVELS[G.level].name}\n升职气：${G.promo}\n回合：${G.turn}\n摸鱼：${G.slackCount} 次\n\n公司说：可惜了，本来明年要给你涨薪的。（明年）\n\n打工人也要注意身体啊！`;
-  } else {
-    gameOverImg.src = IMG['19_弹窗_游戏结束'];
-    title.textContent = '体力耗尽';
-    desc.textContent = `你的体力归零，累倒在工位上...\n\n最终成绩：\n职位：${LEVELS[G.level].name}\n升职气：${G.promo}\n回合：${G.turn}\n\n公司说：身体是革命的本钱，好好休息。\n（休息好了继续来加班）\n\n记得多打卡、多摸鱼恢复体力！`;
-  }
-  document.getElementById('gameOverModal').classList.add('show');
+  const endings = {
+    win: [
+      { title: '职场王者', quote: '你终于活成了自己年轻时讨厌的样子。', desc: '你成功晋升为CEO！站在落地窗前，看着楼下匆匆赶路的年轻人，你想起了当年的自己。秘书递上咖啡，你微微一笑：还是当年那个味道。' },
+      { title: '人生赢家', quote: '钱能解决的问题都不是问题，但钱本身就是个问题。', desc: '你成为了CEO，年薪七位数，有了专属停车位和独立办公室。体检报告显示三高，医生说要注意休息。你笑着说：等我退休再说。' },
+      { title: '登顶之路', quote: '站得越高，风越大，也越容易被吹走。', desc: '你终于坐上了CEO的位置。第一次主持全员大会，你看着台下几百双眼睛，突然想起当年那个在格子间里吃外卖的自己。你清了清嗓子：大家好，我是新来的CEO。' },
+      { title: '功成名就', quote: '成功的秘诀就是坚持，坚持到所有人都放弃了，你就赢了。', desc: '你成功了！从一个小小的打工人一路晋升到CEO。同学聚会上，当年的学霸在给你敬酒，班花在加你微信。你喝多了，在洗手间吐的时候突然想：这一切值得吗？' },
+      { title: '职场传奇', quote: '你的故事被写进了公司培训手册，标题叫从入门到精通。', desc: '你成为了公司历史上最年轻的CEO。HR把你的经历做成了培训课件，新员工入职必看。你在扉页上题词：感谢当年那个没有放弃的自己。然后签了名，市场价五位数。' },
+      { title: '逆袭人生', quote: '咸鱼翻身了还是咸鱼，但至少是个有梦想的咸鱼。', desc: '你做到了！当年那个被王总骂哭的实习生，如今成了王总的顶头上司。你在全员大会上表扬王总工作认真负责，王总激动得热泪盈眶。你心里想：这就是权力的滋味。' },
+      { title: '巅峰时刻', quote: '山顶的风景确实好，但下山的路更难走。', desc: '你站在了职业巅峰。董事会全票通过你的CEO任命，股价当天涨了3%。你在办公室里摆了一把老板椅，坐上去试了试，确实比人体工学椅舒服。就是有点硬，可能需要个坐垫。' }
+    ],
+    dead: [
+      { title: '过劳猝死', quote: '公司少了你照样转，但你家少了你就塌了。', desc: '你在加班到凌晨三点的时候，突然感到胸口一阵剧痛。眼前闪过的不是PPT，而是老婆孩子的笑脸。救护车来的时候，你手里还攥着鼠标。电脑屏幕上是还没写完的周报。' },
+      { title: '英年早逝', quote: '你用生命换来的业绩，最后都成了别人的KPI。', desc: '你走了，年仅28岁。公司在OA系统发了一封讣告，长度不超过100字。同事们在群里发了三个蜡烛表情，然后继续讨论下午的需求评审。你的工位第二天就被清空了，因为资源要合理利用。' },
+      { title: '燃尽了', quote: '燃烧自己照亮别人，最后别人嫌你不够亮。', desc: '你就像一根蜡烛，燃烧了自己，照亮了整个项目组。项目上线那天，你在医院的病床上看着直播。庆功宴上，领导说：这个项目的成功，离不开每一个人的努力。他没有提到你，因为你已经不在了。' },
+      { title: '猝死在工位', quote: '你的最后一条消息是收到，最后一个动作是按Ctrl+S。', desc: '你被发现的时候，已经在工位上坐了整整一天。同事以为你在专注工作，不敢打扰。直到保洁阿姨打扫卫生的时候碰了你一下，你才倒下去。电脑屏幕上还亮着，是一个改了第18版的方案。' },
+      { title: '累倒在加班路上', quote: '你以为你在为梦想奋斗，其实你在为老板的法拉利奋斗。', desc: '加班到凌晨，你在回家的地铁上睡着了。地铁到了终点站，乘务员叫醒你的时候，发现你已经没有了呼吸。你的背包里装着电脑，电脑里装着未完成的工作。你这辈子，最后都在工作。' },
+      { title: '过劳而亡', quote: '健康是1，其他都是0。没有了1，再多0也没用。', desc: '体检报告出来的时候，医生让你住院。你说等这个项目忙完再说。项目忙完了，你也忙完了。追悼会上，领导致悼词说：他是一个好员工。你妈在下面哭：我只要一个好儿子。' },
+      { title: '猝死在会议室', quote: '你在会议上倒下了，大家以为你在做会议记录。', desc: '周会上，你突然倒在了会议桌上。同事们以为你在认真记录，直到你的笔滚到了地上。会议被迫中断，领导说：今天的会就开到这里，大家回去把会议纪要写一下。没有人写，因为记录的人已经不在了。' }
+    ],
+    exhausted: [
+      { title: '体力耗尽', quote: '你不是在工作，你是在被工作。', desc: '你累倒了，彻底累倒了。医生说你需要休息至少三个月。公司HR给你发了一条消息：病假期间工资按60%发放。你看着这条消息，突然觉得还不如直接猝死算了，至少还有抚恤金。' },
+      { title: '累垮了', quote: '你以为你是铁打的，其实你是铁打的——会生锈的那种铁。', desc: '你的身体终于发出了抗议。颈椎病、腰椎间盘突出、慢性胃炎、神经衰弱，一样不落。医生说：你这身体，比六十岁的人还差。你笑了笑：六十岁的人不用加班。' },
+      { title: '燃尽了', quote: '燃尽了，连灰都不剩。', desc: '你 burnout 了。对什么都提不起兴趣，看到钉钉消息就心慌，听到在吗就想摔手机。心理医生说你这是中度抑郁，建议你辞职休息。你说：辞职了房贷谁还？医生沉默了。' },
+      { title: '累倒在打卡机前', quote: '你这辈子最后悔的事，就是每天都准时打卡。', desc: '你在打卡机前倒下了。最后一个动作是按指纹，最后一个想法是还好没迟到。同事把你扶起来的时候，你还在说：我的卡打上了吗？同事说打上了，你才安心地晕过去。' },
+      { title: '身体被掏空', quote: '你把青春献给了公司，公司把你的青春献给了垃圾桶。', desc: '你感觉身体被掏空了。早上起不来，晚上睡不着，上班没精神，下班没力气。老婆说你像个行尸走肉，你说：至少行尸走肉不用还房贷。老婆沉默了，因为你说得对。' },
+      { title: '累出病了', quote: '你用健康换来了钱，然后用钱去买健康，发现不够。', desc: '你累出病了。住院花了三万，医保报销了两万，自己掏了一万。这一万是你加了五十个小时班赚来的。你躺在病床上算了一笔账：时薪200，住院费一小时500。越算越亏。' },
+      { title: '撑不住了', quote: '成年人的崩溃，往往是从一句没事开始的。', desc: '你撑不住了。在一个普通的周二下午，你突然在工位上哭了起来。同事问你怎么了，你说没事，就是眼睛进沙子了。办公室里没有窗户，哪来的沙子？但大家都心照不宣，因为每个人都有过这样的时刻。' }
+    ]
+  };
+
+  const list = endings[reason] || endings.exhausted;
+  const ending = list[Math.floor(Math.random() * list.length)];
+
+  title.textContent = ending.title;
+  desc.textContent = ending.desc + '\n\n—— ' + ending.quote + '\n\n最终成绩：\n升职气 ' + G.promo + '\n总回合 ' + G.turn + '\n摸鱼 ' + G.slackCount + ' 次\n晋升成功 ' + G.promoSuccess + ' 次\n\n同事罗欣最终：' + LEVELS[G.col.level].name + '，升职气 ' + G.col.promo + '\n上级最终：' + (G.bossType==='wang'?'王建国（王总）':'陈道明（陈总') + '，' + LEVELS[G.bossType==='wang'?G.boss.level:G.gm.level].name + '，升职气 ' + (G.bossType==='wang'?G.boss.promo:G.gm.promo);
+
+  const img = document.getElementById('gameOverModalImg');
+  if (reason === 'win') img.src = IMG['16_弹窗_晋升成功'];
+  else img.src = IMG['19_弹窗_游戏结束'];
+
+  modal.classList.add('show');
+  renderBoard();
 }
 
 // ============ 弹窗 ============
@@ -3816,24 +3844,52 @@ function checkOver() {
 
 function gameOver(reason) {
   G.over = true;
-  const gameOverImg = document.getElementById('gameOverModalImg');
+  const modal = document.getElementById('gameOverModal');
   const title = document.getElementById('gameOverTitle');
   const desc = document.getElementById('gameOverDesc');
 
-  if (reason === 'win') {
-    gameOverImg.src = IMG['16_弹窗_晋升成功'];
-    title.textContent = '恭喜通关！';
-    desc.textContent = `你成功晋升为CEO！\n\n最终成绩：\n升职气 ${G.promo}\n总回合 ${G.turn}\n摸鱼 ${G.slackCount} 次\n晋升成功 ${G.promoSuccess} 次\n\n同事罗欣最终：${LEVELS[G.col.level].name}，升职气 ${G.col.promo}\n上级最终：${G.bossType==='wang'?'王建国（王总）':'陈道明（陈总）'}，${LEVELS[G.bossType==='wang'?G.boss.level:G.gm.level].name}，升职气 ${G.bossType==='wang'?G.boss.promo:G.gm.promo}\n\n你是真正的职场王者！`;
-  } else if (reason === 'dead') {
-    gameOverImg.src = IMG['19_弹窗_游戏结束'];
-    title.textContent = '过劳猝死';
-    desc.textContent = `你在弯腰冒汗的状态下强行救火，过劳猝死了...\n\n最终成绩：\n职位：${LEVELS[G.level].name}\n升职气：${G.promo}\n回合：${G.turn}\n摸鱼：${G.slackCount} 次\n\n公司说：可惜了，本来明年要给你涨薪的。（明年）\n\n打工人也要注意身体啊！`;
-  } else {
-    gameOverImg.src = IMG['19_弹窗_游戏结束'];
-    title.textContent = '体力耗尽';
-    desc.textContent = `你的体力归零，累倒在工位上...\n\n最终成绩：\n职位：${LEVELS[G.level].name}\n升职气：${G.promo}\n回合：${G.turn}\n\n公司说：身体是革命的本钱，好好休息。\n（休息好了继续来加班）\n\n记得多打卡、多摸鱼恢复体力！`;
-  }
-  document.getElementById('gameOverModal').classList.add('show');
+  const endings = {
+    win: [
+      { title: '职场王者', quote: '你终于活成了自己年轻时讨厌的样子。', desc: '你成功晋升为CEO！站在落地窗前，看着楼下匆匆赶路的年轻人，你想起了当年的自己。秘书递上咖啡，你微微一笑：还是当年那个味道。' },
+      { title: '人生赢家', quote: '钱能解决的问题都不是问题，但钱本身就是个问题。', desc: '你成为了CEO，年薪七位数，有了专属停车位和独立办公室。体检报告显示三高，医生说要注意休息。你笑着说：等我退休再说。' },
+      { title: '登顶之路', quote: '站得越高，风越大，也越容易被吹走。', desc: '你终于坐上了CEO的位置。第一次主持全员大会，你看着台下几百双眼睛，突然想起当年那个在格子间里吃外卖的自己。你清了清嗓子：大家好，我是新来的CEO。' },
+      { title: '功成名就', quote: '成功的秘诀就是坚持，坚持到所有人都放弃了，你就赢了。', desc: '你成功了！从一个小小的打工人一路晋升到CEO。同学聚会上，当年的学霸在给你敬酒，班花在加你微信。你喝多了，在洗手间吐的时候突然想：这一切值得吗？' },
+      { title: '职场传奇', quote: '你的故事被写进了公司培训手册，标题叫从入门到精通。', desc: '你成为了公司历史上最年轻的CEO。HR把你的经历做成了培训课件，新员工入职必看。你在扉页上题词：感谢当年那个没有放弃的自己。然后签了名，市场价五位数。' },
+      { title: '逆袭人生', quote: '咸鱼翻身了还是咸鱼，但至少是个有梦想的咸鱼。', desc: '你做到了！当年那个被王总骂哭的实习生，如今成了王总的顶头上司。你在全员大会上表扬王总工作认真负责，王总激动得热泪盈眶。你心里想：这就是权力的滋味。' },
+      { title: '巅峰时刻', quote: '山顶的风景确实好，但下山的路更难走。', desc: '你站在了职业巅峰。董事会全票通过你的CEO任命，股价当天涨了3%。你在办公室里摆了一把老板椅，坐上去试了试，确实比人体工学椅舒服。就是有点硬，可能需要个坐垫。' }
+    ],
+    dead: [
+      { title: '过劳猝死', quote: '公司少了你照样转，但你家少了你就塌了。', desc: '你在加班到凌晨三点的时候，突然感到胸口一阵剧痛。眼前闪过的不是PPT，而是老婆孩子的笑脸。救护车来的时候，你手里还攥着鼠标。电脑屏幕上是还没写完的周报。' },
+      { title: '英年早逝', quote: '你用生命换来的业绩，最后都成了别人的KPI。', desc: '你走了，年仅28岁。公司在OA系统发了一封讣告，长度不超过100字。同事们在群里发了三个蜡烛表情，然后继续讨论下午的需求评审。你的工位第二天就被清空了，因为资源要合理利用。' },
+      { title: '燃尽了', quote: '燃烧自己照亮别人，最后别人嫌你不够亮。', desc: '你就像一根蜡烛，燃烧了自己，照亮了整个项目组。项目上线那天，你在医院的病床上看着直播。庆功宴上，领导说：这个项目的成功，离不开每一个人的努力。他没有提到你，因为你已经不在了。' },
+      { title: '猝死在工位', quote: '你的最后一条消息是收到，最后一个动作是按Ctrl+S。', desc: '你被发现的时候，已经在工位上坐了整整一天。同事以为你在专注工作，不敢打扰。直到保洁阿姨打扫卫生的时候碰了你一下，你才倒下去。电脑屏幕上还亮着，是一个改了第18版的方案。' },
+      { title: '累倒在加班路上', quote: '你以为你在为梦想奋斗，其实你在为老板的法拉利奋斗。', desc: '加班到凌晨，你在回家的地铁上睡着了。地铁到了终点站，乘务员叫醒你的时候，发现你已经没有了呼吸。你的背包里装着电脑，电脑里装着未完成的工作。你这辈子，最后都在工作。' },
+      { title: '过劳而亡', quote: '健康是1，其他都是0。没有了1，再多0也没用。', desc: '体检报告出来的时候，医生让你住院。你说等这个项目忙完再说。项目忙完了，你也忙完了。追悼会上，领导致悼词说：他是一个好员工。你妈在下面哭：我只要一个好儿子。' },
+      { title: '猝死在会议室', quote: '你在会议上倒下了，大家以为你在做会议记录。', desc: '周会上，你突然倒在了会议桌上。同事们以为你在认真记录，直到你的笔滚到了地上。会议被迫中断，领导说：今天的会就开到这里，大家回去把会议纪要写一下。没有人写，因为记录的人已经不在了。' }
+    ],
+    exhausted: [
+      { title: '体力耗尽', quote: '你不是在工作，你是在被工作。', desc: '你累倒了，彻底累倒了。医生说你需要休息至少三个月。公司HR给你发了一条消息：病假期间工资按60%发放。你看着这条消息，突然觉得还不如直接猝死算了，至少还有抚恤金。' },
+      { title: '累垮了', quote: '你以为你是铁打的，其实你是铁打的——会生锈的那种铁。', desc: '你的身体终于发出了抗议。颈椎病、腰椎间盘突出、慢性胃炎、神经衰弱，一样不落。医生说：你这身体，比六十岁的人还差。你笑了笑：六十岁的人不用加班。' },
+      { title: '燃尽了', quote: '燃尽了，连灰都不剩。', desc: '你 burnout 了。对什么都提不起兴趣，看到钉钉消息就心慌，听到在吗就想摔手机。心理医生说你这是中度抑郁，建议你辞职休息。你说：辞职了房贷谁还？医生沉默了。' },
+      { title: '累倒在打卡机前', quote: '你这辈子最后悔的事，就是每天都准时打卡。', desc: '你在打卡机前倒下了。最后一个动作是按指纹，最后一个想法是还好没迟到。同事把你扶起来的时候，你还在说：我的卡打上了吗？同事说打上了，你才安心地晕过去。' },
+      { title: '身体被掏空', quote: '你把青春献给了公司，公司把你的青春献给了垃圾桶。', desc: '你感觉身体被掏空了。早上起不来，晚上睡不着，上班没精神，下班没力气。老婆说你像个行尸走肉，你说：至少行尸走肉不用还房贷。老婆沉默了，因为你说得对。' },
+      { title: '累出病了', quote: '你用健康换来了钱，然后用钱去买健康，发现不够。', desc: '你累出病了。住院花了三万，医保报销了两万，自己掏了一万。这一万是你加了五十个小时班赚来的。你躺在病床上算了一笔账：时薪200，住院费一小时500。越算越亏。' },
+      { title: '撑不住了', quote: '成年人的崩溃，往往是从一句没事开始的。', desc: '你撑不住了。在一个普通的周二下午，你突然在工位上哭了起来。同事问你怎么了，你说没事，就是眼睛进沙子了。办公室里没有窗户，哪来的沙子？但大家都心照不宣，因为每个人都有过这样的时刻。' }
+    ]
+  };
+
+  const list = endings[reason] || endings.exhausted;
+  const ending = list[Math.floor(Math.random() * list.length)];
+
+  title.textContent = ending.title;
+  desc.textContent = ending.desc + '\n\n—— ' + ending.quote + '\n\n最终成绩：\n升职气 ' + G.promo + '\n总回合 ' + G.turn + '\n摸鱼 ' + G.slackCount + ' 次\n晋升成功 ' + G.promoSuccess + ' 次\n\n同事罗欣最终：' + LEVELS[G.col.level].name + '，升职气 ' + G.col.promo + '\n上级最终：' + (G.bossType==='wang'?'王建国（王总）':'陈道明（陈总') + '，' + LEVELS[G.bossType==='wang'?G.boss.level:G.gm.level].name + '，升职气 ' + (G.bossType==='wang'?G.boss.promo:G.gm.promo);
+
+  const img = document.getElementById('gameOverModalImg');
+  if (reason === 'win') img.src = IMG['16_弹窗_晋升成功'];
+  else img.src = IMG['19_弹窗_游戏结束'];
+
+  modal.classList.add('show');
+  renderBoard();
 }
 
 // ============ 弹窗 ============
@@ -5765,24 +5821,52 @@ function checkOver() {
 
 function gameOver(reason) {
   G.over = true;
-  const gameOverImg = document.getElementById('gameOverModalImg');
+  const modal = document.getElementById('gameOverModal');
   const title = document.getElementById('gameOverTitle');
   const desc = document.getElementById('gameOverDesc');
 
-  if (reason === 'win') {
-    gameOverImg.src = IMG['16_弹窗_晋升成功'];
-    title.textContent = '恭喜通关！';
-    desc.textContent = `你成功晋升为CEO！\n\n最终成绩：\n升职气 ${G.promo}\n总回合 ${G.turn}\n摸鱼 ${G.slackCount} 次\n晋升成功 ${G.promoSuccess} 次\n\n同事罗欣最终：${LEVELS[G.col.level].name}，升职气 ${G.col.promo}\n上级最终：${G.bossType==='wang'?'王建国（王总）':'陈道明（陈总）'}，${LEVELS[G.bossType==='wang'?G.boss.level:G.gm.level].name}，升职气 ${G.bossType==='wang'?G.boss.promo:G.gm.promo}\n\n你是真正的职场王者！`;
-  } else if (reason === 'dead') {
-    gameOverImg.src = IMG['19_弹窗_游戏结束'];
-    title.textContent = '过劳猝死';
-    desc.textContent = `你在弯腰冒汗的状态下强行救火，过劳猝死了...\n\n最终成绩：\n职位：${LEVELS[G.level].name}\n升职气：${G.promo}\n回合：${G.turn}\n摸鱼：${G.slackCount} 次\n\n公司说：可惜了，本来明年要给你涨薪的。（明年）\n\n打工人也要注意身体啊！`;
-  } else {
-    gameOverImg.src = IMG['19_弹窗_游戏结束'];
-    title.textContent = '体力耗尽';
-    desc.textContent = `你的体力归零，累倒在工位上...\n\n最终成绩：\n职位：${LEVELS[G.level].name}\n升职气：${G.promo}\n回合：${G.turn}\n\n公司说：身体是革命的本钱，好好休息。\n（休息好了继续来加班）\n\n记得多打卡、多摸鱼恢复体力！`;
-  }
-  document.getElementById('gameOverModal').classList.add('show');
+  const endings = {
+    win: [
+      { title: '职场王者', quote: '你终于活成了自己年轻时讨厌的样子。', desc: '你成功晋升为CEO！站在落地窗前，看着楼下匆匆赶路的年轻人，你想起了当年的自己。秘书递上咖啡，你微微一笑：还是当年那个味道。' },
+      { title: '人生赢家', quote: '钱能解决的问题都不是问题，但钱本身就是个问题。', desc: '你成为了CEO，年薪七位数，有了专属停车位和独立办公室。体检报告显示三高，医生说要注意休息。你笑着说：等我退休再说。' },
+      { title: '登顶之路', quote: '站得越高，风越大，也越容易被吹走。', desc: '你终于坐上了CEO的位置。第一次主持全员大会，你看着台下几百双眼睛，突然想起当年那个在格子间里吃外卖的自己。你清了清嗓子：大家好，我是新来的CEO。' },
+      { title: '功成名就', quote: '成功的秘诀就是坚持，坚持到所有人都放弃了，你就赢了。', desc: '你成功了！从一个小小的打工人一路晋升到CEO。同学聚会上，当年的学霸在给你敬酒，班花在加你微信。你喝多了，在洗手间吐的时候突然想：这一切值得吗？' },
+      { title: '职场传奇', quote: '你的故事被写进了公司培训手册，标题叫从入门到精通。', desc: '你成为了公司历史上最年轻的CEO。HR把你的经历做成了培训课件，新员工入职必看。你在扉页上题词：感谢当年那个没有放弃的自己。然后签了名，市场价五位数。' },
+      { title: '逆袭人生', quote: '咸鱼翻身了还是咸鱼，但至少是个有梦想的咸鱼。', desc: '你做到了！当年那个被王总骂哭的实习生，如今成了王总的顶头上司。你在全员大会上表扬王总工作认真负责，王总激动得热泪盈眶。你心里想：这就是权力的滋味。' },
+      { title: '巅峰时刻', quote: '山顶的风景确实好，但下山的路更难走。', desc: '你站在了职业巅峰。董事会全票通过你的CEO任命，股价当天涨了3%。你在办公室里摆了一把老板椅，坐上去试了试，确实比人体工学椅舒服。就是有点硬，可能需要个坐垫。' }
+    ],
+    dead: [
+      { title: '过劳猝死', quote: '公司少了你照样转，但你家少了你就塌了。', desc: '你在加班到凌晨三点的时候，突然感到胸口一阵剧痛。眼前闪过的不是PPT，而是老婆孩子的笑脸。救护车来的时候，你手里还攥着鼠标。电脑屏幕上是还没写完的周报。' },
+      { title: '英年早逝', quote: '你用生命换来的业绩，最后都成了别人的KPI。', desc: '你走了，年仅28岁。公司在OA系统发了一封讣告，长度不超过100字。同事们在群里发了三个蜡烛表情，然后继续讨论下午的需求评审。你的工位第二天就被清空了，因为资源要合理利用。' },
+      { title: '燃尽了', quote: '燃烧自己照亮别人，最后别人嫌你不够亮。', desc: '你就像一根蜡烛，燃烧了自己，照亮了整个项目组。项目上线那天，你在医院的病床上看着直播。庆功宴上，领导说：这个项目的成功，离不开每一个人的努力。他没有提到你，因为你已经不在了。' },
+      { title: '猝死在工位', quote: '你的最后一条消息是收到，最后一个动作是按Ctrl+S。', desc: '你被发现的时候，已经在工位上坐了整整一天。同事以为你在专注工作，不敢打扰。直到保洁阿姨打扫卫生的时候碰了你一下，你才倒下去。电脑屏幕上还亮着，是一个改了第18版的方案。' },
+      { title: '累倒在加班路上', quote: '你以为你在为梦想奋斗，其实你在为老板的法拉利奋斗。', desc: '加班到凌晨，你在回家的地铁上睡着了。地铁到了终点站，乘务员叫醒你的时候，发现你已经没有了呼吸。你的背包里装着电脑，电脑里装着未完成的工作。你这辈子，最后都在工作。' },
+      { title: '过劳而亡', quote: '健康是1，其他都是0。没有了1，再多0也没用。', desc: '体检报告出来的时候，医生让你住院。你说等这个项目忙完再说。项目忙完了，你也忙完了。追悼会上，领导致悼词说：他是一个好员工。你妈在下面哭：我只要一个好儿子。' },
+      { title: '猝死在会议室', quote: '你在会议上倒下了，大家以为你在做会议记录。', desc: '周会上，你突然倒在了会议桌上。同事们以为你在认真记录，直到你的笔滚到了地上。会议被迫中断，领导说：今天的会就开到这里，大家回去把会议纪要写一下。没有人写，因为记录的人已经不在了。' }
+    ],
+    exhausted: [
+      { title: '体力耗尽', quote: '你不是在工作，你是在被工作。', desc: '你累倒了，彻底累倒了。医生说你需要休息至少三个月。公司HR给你发了一条消息：病假期间工资按60%发放。你看着这条消息，突然觉得还不如直接猝死算了，至少还有抚恤金。' },
+      { title: '累垮了', quote: '你以为你是铁打的，其实你是铁打的——会生锈的那种铁。', desc: '你的身体终于发出了抗议。颈椎病、腰椎间盘突出、慢性胃炎、神经衰弱，一样不落。医生说：你这身体，比六十岁的人还差。你笑了笑：六十岁的人不用加班。' },
+      { title: '燃尽了', quote: '燃尽了，连灰都不剩。', desc: '你 burnout 了。对什么都提不起兴趣，看到钉钉消息就心慌，听到在吗就想摔手机。心理医生说你这是中度抑郁，建议你辞职休息。你说：辞职了房贷谁还？医生沉默了。' },
+      { title: '累倒在打卡机前', quote: '你这辈子最后悔的事，就是每天都准时打卡。', desc: '你在打卡机前倒下了。最后一个动作是按指纹，最后一个想法是还好没迟到。同事把你扶起来的时候，你还在说：我的卡打上了吗？同事说打上了，你才安心地晕过去。' },
+      { title: '身体被掏空', quote: '你把青春献给了公司，公司把你的青春献给了垃圾桶。', desc: '你感觉身体被掏空了。早上起不来，晚上睡不着，上班没精神，下班没力气。老婆说你像个行尸走肉，你说：至少行尸走肉不用还房贷。老婆沉默了，因为你说得对。' },
+      { title: '累出病了', quote: '你用健康换来了钱，然后用钱去买健康，发现不够。', desc: '你累出病了。住院花了三万，医保报销了两万，自己掏了一万。这一万是你加了五十个小时班赚来的。你躺在病床上算了一笔账：时薪200，住院费一小时500。越算越亏。' },
+      { title: '撑不住了', quote: '成年人的崩溃，往往是从一句没事开始的。', desc: '你撑不住了。在一个普通的周二下午，你突然在工位上哭了起来。同事问你怎么了，你说没事，就是眼睛进沙子了。办公室里没有窗户，哪来的沙子？但大家都心照不宣，因为每个人都有过这样的时刻。' }
+    ]
+  };
+
+  const list = endings[reason] || endings.exhausted;
+  const ending = list[Math.floor(Math.random() * list.length)];
+
+  title.textContent = ending.title;
+  desc.textContent = ending.desc + '\n\n—— ' + ending.quote + '\n\n最终成绩：\n升职气 ' + G.promo + '\n总回合 ' + G.turn + '\n摸鱼 ' + G.slackCount + ' 次\n晋升成功 ' + G.promoSuccess + ' 次\n\n同事罗欣最终：' + LEVELS[G.col.level].name + '，升职气 ' + G.col.promo + '\n上级最终：' + (G.bossType==='wang'?'王建国（王总）':'陈道明（陈总') + '，' + LEVELS[G.bossType==='wang'?G.boss.level:G.gm.level].name + '，升职气 ' + (G.bossType==='wang'?G.boss.promo:G.gm.promo);
+
+  const img = document.getElementById('gameOverModalImg');
+  if (reason === 'win') img.src = IMG['16_弹窗_晋升成功'];
+  else img.src = IMG['19_弹窗_游戏结束'];
+
+  modal.classList.add('show');
+  renderBoard();
 }
 
 // ============ 弹窗 ============
@@ -7624,24 +7708,52 @@ function checkOver() {
 
 function gameOver(reason) {
   G.over = true;
-  const gameOverImg = document.getElementById('gameOverModalImg');
+  const modal = document.getElementById('gameOverModal');
   const title = document.getElementById('gameOverTitle');
   const desc = document.getElementById('gameOverDesc');
 
-  if (reason === 'win') {
-    gameOverImg.src = IMG['16_弹窗_晋升成功'];
-    title.textContent = '恭喜通关！';
-    desc.textContent = `你成功晋升为CEO！\n\n最终成绩：\n升职气 ${G.promo}\n总回合 ${G.turn}\n摸鱼 ${G.slackCount} 次\n晋升成功 ${G.promoSuccess} 次\n\n同事罗欣最终：${LEVELS[G.col.level].name}，升职气 ${G.col.promo}\n上级最终：${G.bossType==='wang'?'王建国（王总）':'陈道明（陈总）'}，${LEVELS[G.bossType==='wang'?G.boss.level:G.gm.level].name}，升职气 ${G.bossType==='wang'?G.boss.promo:G.gm.promo}\n\n你是真正的职场王者！`;
-  } else if (reason === 'dead') {
-    gameOverImg.src = IMG['19_弹窗_游戏结束'];
-    title.textContent = '过劳猝死';
-    desc.textContent = `你在弯腰冒汗的状态下强行救火，过劳猝死了...\n\n最终成绩：\n职位：${LEVELS[G.level].name}\n升职气：${G.promo}\n回合：${G.turn}\n摸鱼：${G.slackCount} 次\n\n公司说：可惜了，本来明年要给你涨薪的。（明年）\n\n打工人也要注意身体啊！`;
-  } else {
-    gameOverImg.src = IMG['19_弹窗_游戏结束'];
-    title.textContent = '体力耗尽';
-    desc.textContent = `你的体力归零，累倒在工位上...\n\n最终成绩：\n职位：${LEVELS[G.level].name}\n升职气：${G.promo}\n回合：${G.turn}\n\n公司说：身体是革命的本钱，好好休息。\n（休息好了继续来加班）\n\n记得多打卡、多摸鱼恢复体力！`;
-  }
-  document.getElementById('gameOverModal').classList.add('show');
+  const endings = {
+    win: [
+      { title: '职场王者', quote: '你终于活成了自己年轻时讨厌的样子。', desc: '你成功晋升为CEO！站在落地窗前，看着楼下匆匆赶路的年轻人，你想起了当年的自己。秘书递上咖啡，你微微一笑：还是当年那个味道。' },
+      { title: '人生赢家', quote: '钱能解决的问题都不是问题，但钱本身就是个问题。', desc: '你成为了CEO，年薪七位数，有了专属停车位和独立办公室。体检报告显示三高，医生说要注意休息。你笑着说：等我退休再说。' },
+      { title: '登顶之路', quote: '站得越高，风越大，也越容易被吹走。', desc: '你终于坐上了CEO的位置。第一次主持全员大会，你看着台下几百双眼睛，突然想起当年那个在格子间里吃外卖的自己。你清了清嗓子：大家好，我是新来的CEO。' },
+      { title: '功成名就', quote: '成功的秘诀就是坚持，坚持到所有人都放弃了，你就赢了。', desc: '你成功了！从一个小小的打工人一路晋升到CEO。同学聚会上，当年的学霸在给你敬酒，班花在加你微信。你喝多了，在洗手间吐的时候突然想：这一切值得吗？' },
+      { title: '职场传奇', quote: '你的故事被写进了公司培训手册，标题叫从入门到精通。', desc: '你成为了公司历史上最年轻的CEO。HR把你的经历做成了培训课件，新员工入职必看。你在扉页上题词：感谢当年那个没有放弃的自己。然后签了名，市场价五位数。' },
+      { title: '逆袭人生', quote: '咸鱼翻身了还是咸鱼，但至少是个有梦想的咸鱼。', desc: '你做到了！当年那个被王总骂哭的实习生，如今成了王总的顶头上司。你在全员大会上表扬王总工作认真负责，王总激动得热泪盈眶。你心里想：这就是权力的滋味。' },
+      { title: '巅峰时刻', quote: '山顶的风景确实好，但下山的路更难走。', desc: '你站在了职业巅峰。董事会全票通过你的CEO任命，股价当天涨了3%。你在办公室里摆了一把老板椅，坐上去试了试，确实比人体工学椅舒服。就是有点硬，可能需要个坐垫。' }
+    ],
+    dead: [
+      { title: '过劳猝死', quote: '公司少了你照样转，但你家少了你就塌了。', desc: '你在加班到凌晨三点的时候，突然感到胸口一阵剧痛。眼前闪过的不是PPT，而是老婆孩子的笑脸。救护车来的时候，你手里还攥着鼠标。电脑屏幕上是还没写完的周报。' },
+      { title: '英年早逝', quote: '你用生命换来的业绩，最后都成了别人的KPI。', desc: '你走了，年仅28岁。公司在OA系统发了一封讣告，长度不超过100字。同事们在群里发了三个蜡烛表情，然后继续讨论下午的需求评审。你的工位第二天就被清空了，因为资源要合理利用。' },
+      { title: '燃尽了', quote: '燃烧自己照亮别人，最后别人嫌你不够亮。', desc: '你就像一根蜡烛，燃烧了自己，照亮了整个项目组。项目上线那天，你在医院的病床上看着直播。庆功宴上，领导说：这个项目的成功，离不开每一个人的努力。他没有提到你，因为你已经不在了。' },
+      { title: '猝死在工位', quote: '你的最后一条消息是收到，最后一个动作是按Ctrl+S。', desc: '你被发现的时候，已经在工位上坐了整整一天。同事以为你在专注工作，不敢打扰。直到保洁阿姨打扫卫生的时候碰了你一下，你才倒下去。电脑屏幕上还亮着，是一个改了第18版的方案。' },
+      { title: '累倒在加班路上', quote: '你以为你在为梦想奋斗，其实你在为老板的法拉利奋斗。', desc: '加班到凌晨，你在回家的地铁上睡着了。地铁到了终点站，乘务员叫醒你的时候，发现你已经没有了呼吸。你的背包里装着电脑，电脑里装着未完成的工作。你这辈子，最后都在工作。' },
+      { title: '过劳而亡', quote: '健康是1，其他都是0。没有了1，再多0也没用。', desc: '体检报告出来的时候，医生让你住院。你说等这个项目忙完再说。项目忙完了，你也忙完了。追悼会上，领导致悼词说：他是一个好员工。你妈在下面哭：我只要一个好儿子。' },
+      { title: '猝死在会议室', quote: '你在会议上倒下了，大家以为你在做会议记录。', desc: '周会上，你突然倒在了会议桌上。同事们以为你在认真记录，直到你的笔滚到了地上。会议被迫中断，领导说：今天的会就开到这里，大家回去把会议纪要写一下。没有人写，因为记录的人已经不在了。' }
+    ],
+    exhausted: [
+      { title: '体力耗尽', quote: '你不是在工作，你是在被工作。', desc: '你累倒了，彻底累倒了。医生说你需要休息至少三个月。公司HR给你发了一条消息：病假期间工资按60%发放。你看着这条消息，突然觉得还不如直接猝死算了，至少还有抚恤金。' },
+      { title: '累垮了', quote: '你以为你是铁打的，其实你是铁打的——会生锈的那种铁。', desc: '你的身体终于发出了抗议。颈椎病、腰椎间盘突出、慢性胃炎、神经衰弱，一样不落。医生说：你这身体，比六十岁的人还差。你笑了笑：六十岁的人不用加班。' },
+      { title: '燃尽了', quote: '燃尽了，连灰都不剩。', desc: '你 burnout 了。对什么都提不起兴趣，看到钉钉消息就心慌，听到在吗就想摔手机。心理医生说你这是中度抑郁，建议你辞职休息。你说：辞职了房贷谁还？医生沉默了。' },
+      { title: '累倒在打卡机前', quote: '你这辈子最后悔的事，就是每天都准时打卡。', desc: '你在打卡机前倒下了。最后一个动作是按指纹，最后一个想法是还好没迟到。同事把你扶起来的时候，你还在说：我的卡打上了吗？同事说打上了，你才安心地晕过去。' },
+      { title: '身体被掏空', quote: '你把青春献给了公司，公司把你的青春献给了垃圾桶。', desc: '你感觉身体被掏空了。早上起不来，晚上睡不着，上班没精神，下班没力气。老婆说你像个行尸走肉，你说：至少行尸走肉不用还房贷。老婆沉默了，因为你说得对。' },
+      { title: '累出病了', quote: '你用健康换来了钱，然后用钱去买健康，发现不够。', desc: '你累出病了。住院花了三万，医保报销了两万，自己掏了一万。这一万是你加了五十个小时班赚来的。你躺在病床上算了一笔账：时薪200，住院费一小时500。越算越亏。' },
+      { title: '撑不住了', quote: '成年人的崩溃，往往是从一句没事开始的。', desc: '你撑不住了。在一个普通的周二下午，你突然在工位上哭了起来。同事问你怎么了，你说没事，就是眼睛进沙子了。办公室里没有窗户，哪来的沙子？但大家都心照不宣，因为每个人都有过这样的时刻。' }
+    ]
+  };
+
+  const list = endings[reason] || endings.exhausted;
+  const ending = list[Math.floor(Math.random() * list.length)];
+
+  title.textContent = ending.title;
+  desc.textContent = ending.desc + '\n\n—— ' + ending.quote + '\n\n最终成绩：\n升职气 ' + G.promo + '\n总回合 ' + G.turn + '\n摸鱼 ' + G.slackCount + ' 次\n晋升成功 ' + G.promoSuccess + ' 次\n\n同事罗欣最终：' + LEVELS[G.col.level].name + '，升职气 ' + G.col.promo + '\n上级最终：' + (G.bossType==='wang'?'王建国（王总）':'陈道明（陈总') + '，' + LEVELS[G.bossType==='wang'?G.boss.level:G.gm.level].name + '，升职气 ' + (G.bossType==='wang'?G.boss.promo:G.gm.promo);
+
+  const img = document.getElementById('gameOverModalImg');
+  if (reason === 'win') img.src = IMG['16_弹窗_晋升成功'];
+  else img.src = IMG['19_弹窗_游戏结束'];
+
+  modal.classList.add('show');
+  renderBoard();
 }
 
 // ============ 弹窗 ============
